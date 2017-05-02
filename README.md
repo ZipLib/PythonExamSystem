@@ -1,2 +1,2 @@
 My first repository. 
-DNF (Did Not Finish)
+DNF (Did Not Finished)
