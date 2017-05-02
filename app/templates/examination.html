@@ -1,0 +1,475 @@
+{% extends "admin.html" %}
+{% import "_macros.html" as macros %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}
+    考试项
+{% endblock %}
+
+{% block style %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/exam.css') }}">
+    <style>
+    #questions{visibility: hidden}
+    #div_timer{margin-top: 20px;height: 30px;width: 150px;}
+    #div_timer button{width: 150px;}
+    </style>
+{% endblock %}
+{% block body %}
+    {% block navbar %}
+    {% endblock %}
+
+<div onload="clearShearPlate();" >
+{% if current_user.__tablename__ == 'questionMakers' %}
+    <button name="FullScreen" onClick="full_screen()">全屏显示</button>
+    <button onclick="exit_full_screen()">退出全屏</button>
+    <button id="back_web" onclick="javascript:history.go(-1);">返回</button>
+{% endif %}
+
+<table>
+    <tr>{% if exam_style %}限时：{{ exam_style }}{% endif %}
+    </tr>
+</table>
+</div>
+
+    {% block content %}
+        {% if current_user.__tablename__ == 'examinees' %}
+            <div id="div_timer" ><button onclick="exam_start()">开始考试</button></div>
+        {% elif current_user.__tablename__ == 'questionMakers' %}
+            <div id="div_auto" onload="show_auto()" style="width: 200px;align-items: center;">
+                <button onclick="show_auto()">展开</button>
+            </div>
+        {% endif %}
+        <div id="questions" class="col-md-10" style="margin-left: 100px;">
+            <div style="margin-left: 280px;">
+                <span><h2>{{ exam_title }}</h2></span>
+            </div>
+            <!-- ！！ action 发送表单数据 到URL -->
+        <form id="my_form" name="my_form" role="form" action="" method="post" class="form-horizontal">
+
+        {% if question_type[0] != 'False' %}
+            {% if pagination[1] %}
+            <table class="table table-striped">
+                <caption><b>一、单选题</b></caption>
+            </table>
+            <table2>
+                {% for question in pagination[0].items %}
+                <thead>
+                        <tr><b>
+                            <script>questionNumber = function (i){
+                                        document.write(i+1);
+                                    };
+                                questionNumber({{ pagination[0].items.index(question) }})
+                            </script>
+                            </b>.{{ question.question }} (难度：{{ question.difficulty }})
+                        </tr> <br >
+                        <tr><div class="radio">
+                            <label><input required type="radio" id="s{{ question.id }}a"
+                                          value="A" name="sq{{ question.id }}" />
+                                {{ question.option1 }}
+                            </label>
+                        </div>
+                        </tr>
+                        <tr><div class="radio">
+                            <label><input type="radio" id="s{{ question.id }}b"
+                                            value="B" name="sq{{ question.id }}" />
+                                {{ question.option2 }}
+                            </label>
+                        </div>
+                        </tr>
+                        <tr><div class="radio">
+                            <label ><input type="radio" id="s{{ question.id }}c"
+                                           value="C" name="sq{{ question.id }}" />
+                                {{ question.option3 }} </label>
+                        </div>
+                        </tr>
+                        <tr><div class="radio">
+                            <label ><input type="radio" id="s{{ question.id }}d"
+                                           value="D" name="sq{{ question.id }}" />
+                                 {{ question.option4 }} </label>
+                        </div>
+                        </tr>
+                        <tr><!-- 选题答案 -->
+                            <input type="hidden" class="question-key" id="s{{ question.id }}ed"
+                                   value="{{ question.answer }}" />
+                        </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td >
+                            <span class="qk" id="show{{ question.id }}"></span>
+                        </td>
+                    </tr> <br><br>
+                </tbody>
+                {% endfor %}
+            </table2>
+            {% endif %}
+        {% else %}
+            &nbsp;
+        {% endif %}
+        {% if question_type[1] != 'False' %}
+            {% if pagination[1] %}
+            <table class="table table-striped">
+                <caption><b>二、多选题</b></caption>    {# 检查 至少一项选择 DNF #}
+            </table>
+            <table2>
+                {% for question in pagination[1].items %}
+                <thead>
+                <tr>
+                        <tr><b>
+                                <script>
+                                    questionNumber({{ pagination[1].items.index(question) }})
+                                </script>
+                            </b>. {{ question.question }} (难度：{{ question.difficulty }})
+                        </tr><br >
+                        <tr><div class="checkbox">
+                                <label><input type="checkbox" id="m{{ question.id }}a"
+                                              value="A" name="mq{{ question.id }}" />
+                                 {{ question.option1 }} </label>
+                            </div>
+                        </tr>
+
+                        <tr><div class="checkbox">
+                            <label ><input type="checkbox" id="m{{ question.id }}b" value="B"
+                                           name="mq{{ question.id }}" />
+                             {{ question.option2 }} </label>
+                        </div>
+                        </tr>
+
+                        <tr><div class="checkbox">
+                            <label> <input type="checkbox" id="m{{ question.id }}c" value="C"
+                                           name="mq{{ question.id }}" />
+                            {{ question.option3 }}
+                            </label>
+                        </div>
+                        </tr>
+
+                        <tr><div class="checkbox">
+                            <label ><input type="checkbox" id="m{{ question.id }}d" value="D"
+                                           name="mq{{ question.id }}" />
+                             {{ question.option4 }}</label>
+                        </div>
+                        </tr>
+                        {% if question.option5 %}
+                            <tr><div class="checkbox">
+                                <label><input type="checkbox" id="m{{ question.id }}d" value="E"
+                                              name="mq{{ question.id }}" />
+                                 {{ question.option5 }}</label>
+                            </div>
+                            </tr>
+                        {% endif %}
+                        {% if question.option6 %}
+                            <tr><div class="checkbox">
+                                <label><input type="checkbox" id="m{{ question.id }}d" value="F"
+                                              name="mq{{ question.id }}" />
+                                 {{ question.option6 }}</label>
+                            </div>
+                            </tr><br>
+                        {% endif %}
+                        </tr>
+                        <tr><!-- 选题答案 -->
+                            <input type="hidden" id="s{{ question.id }}ed" value="{{ question.answer }}" />
+                        </tr> <br >
+                </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td width="100" class="qk" id="show{{ question.id }}"></td>
+                    </tr> <br >
+                </tbody>
+                {% endfor %}
+            </table2>
+                {% endif %}
+        {% else %}
+            &nbsp;
+        {% endif %}
+        {% if question_type[2] != 'False' %}
+            {% if pagination[2] %}
+            <table class="table table-striped">
+                <caption><b>三、判断题</b></caption>
+            </table>
+            <table2>
+                {% for question in pagination[2].items %}
+                <thead>
+                        <tr><b><script>
+                                questionNumber({{ pagination[2].items.index(question) }})
+                                </script>
+                            </b>. {{ question.question }} (难度：{{ question.difficulty }})
+                        </tr><br >
+                        <tr><div class="radio">
+                            <label ><input required type="radio" id="j{{ question.id }}a" value="正确"
+                                   name="jq{{ question.id }}" />
+                                对的</label>
+                        </div>
+                        </tr>
+                        <tr><div class="radio">
+                            <label><input type="radio" id="j{{ question.id }}b" value="错误"
+                                   name="jq{{ question.id }}" />
+                                错的</label>
+                        </div>
+                        </tr>
+                        <tr><!-- 选题答案 -->
+                            <input type="hidden" id="s{{ question.id }}ed"
+                                   value="{{ question.answered }}" />
+                        </tr><br >
+                </thead>
+
+                <tbody>
+                    <td>
+                    </td>
+                </tbody>
+                {% endfor %}
+            </table2>
+                {% endif %}
+        {% else %}
+            &nbsp;
+        {% endif %}
+        {% if question_type[3] != 'False' %}
+            {% if pagination[3] %}
+            <table class="table table-striped">
+                <caption><b>四、填空题</b></caption>
+            </table>
+            <table2>
+                {% for question in pagination[3].items %}
+                <thead>
+                <tr>
+                        <tr><b><script>
+                                questionNumber({{ pagination[3].items.index(question) }})
+                                </script>
+                            </b>. {{ question.question }} (难度：{{ question.difficulty }})
+
+                        </tr><br >
+
+                        <tr><div class="form-group  required">
+                            <input id="f{{ question.id }}a" name="fq1{{ question.id }}"
+                                   required type="text"
+                                   value=" " />
+                        </div>
+                        </tr>
+                        {% if question.fill2 %}
+                            <tr><div class="form-group  required">
+                                    <input id="f{{ question.id }}b" name="fq2{{ question.id }}"
+                                           required type="text"
+                                           value=" " />
+                                </div>
+                            </tr>
+                        {% endif %}
+
+                        {% if question.fill3 %}
+                            <tr><div class="form-group  required">
+                                    <input id="f{{ question.id }}c" name="fq3{{ question.id }}"
+                                           required type="text"
+                                           value=" " />
+                                </div>
+                            </tr>
+                        {% endif %}
+
+                        {% if question.fill4 %}
+                            <tr><div class="form-group  required">
+                                    <input id="f{{ question.id }}d" name="fq4{{ question.id }}"
+                                           required type="text"
+                                           value=" " />
+                                </div>
+                            </tr>
+                        {% endif %}
+
+                        {% if question.fill5 %}
+                            <tr><div class="form-group  required">
+                                    <input id="f{{ question.id }}e" name="fq5{{ question.id }}"
+                                           required type="text"
+                                           value=" " />
+                                </div>
+                            </tr>
+                        {% endif %}
+
+                        {% if question.fill6 %}
+                            <tr><div class="form-group  required">
+                                    <input id="f{{ question.id }}f" name="fq6{{ question.id }}"
+                                           required type="text"
+                                           value=" " />
+                                </div>
+                            </tr>
+                        {% endif %}
+                        </tr>
+                        <tr><!-- 选题答案 -->
+                            <input type="hidden" id="s{{ question.id }}ed"
+                                   value="{{ question.answered }}" />
+                        </tr><br ><br >
+                </tr>
+                </thead>
+
+                <tbody>
+                    <td>
+                    </td>
+                </tbody>
+                {% endfor %}
+            </table2>
+                {% endif %}
+        {% else %}
+            &nbsp;
+        {% endif %}
+        {% if question_type[4] != 'False' %}
+            {% if pagination[4] %}
+            <table class="table table-striped">
+                <caption><b>五、问答题</b></caption>
+            </table>
+            <table2>
+                {% for question in pagination[4].items %}
+                <thead>
+                <tr><b><script>
+                            questionNumber({{ pagination[4].items.index(question) }})
+                        </script>
+                    </b>. {{ question.question }} (难度：{{ question.difficulty }})
+                </tr> <br >
+                <tr><div class="form-group  required">
+                    <textarea class="answer_input" id="s{{ question.id }}a" name="aq{{ question.id }}"
+                              required type="text" style="width: 500px;height: 150px;" ></textarea>
+                </div>
+                </tr> <br ><br >
+                </thead>
+                <tbody>
+                    <td></td>
+                </tbody>
+                {% endfor %}
+            </table2>
+                {% endif %}
+        {% else %}
+            &nbsp;
+        {% endif %}
+
+                <div class="form-group" style="visibility: hidden">
+                    <label for="intro" class="control-label col-md-2">Intro</label>
+                    <div class="col-md-10">
+                        <textarea id="intro" class="form-control" rows="3" name="intro" placeholder="Intro"></textarea>
+                    </div>
+                </div>
+        {# 演示结束 #}
+        {% if current_user.__tablename__ == 'examinees' %}
+            <div id="full_check" class="form-group" align="middle"><!--{# {{ wtf.quick_form(form) }} #}-->
+                <input id="submit" name="submit" type="submit" value="检查完毕？提交"/>
+            </div>  <br> <br>
+            <span onload="full_screen()" style="visibility: hidden">点击全屏</span> {# 实现自动全屏 <body>?DNF check #}
+{#            <span id="full_click" onclick="requestFullScreen()" style="visibility: hidden">点击全屏</span>#}
+{#            <span id="full_click2" onclick="alert('click.')" style="visibility: visible">点击全屏</span>#}
+        {% endif %}
+        </form>
+        </div>
+
+    {% endblock %}
+{% endblock %}
+
+
+{% block script %}
+{{ super() }}
+
+{#    {% if current_user == 'examinees' %}#}
+{#        <script onload="window.open(document.location, 'big', 'fullscreen=yes')"></script>#}
+{#    {% endif %}#}
+
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    {# 仿FlaskForm调js DNF #}
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/paper.js') }}"></script>
+
+
+{# 考生页全屏显示 #}
+    <script language="JavaScript">
+
+        function requestFullScreen() {
+            var element = document.documentElement;
+            var requestMethod = element.requestFullScreen || element.webkitRequestFullScreen
+                || element.mozRequestFullScreen || element.msRequestFullScreen;
+            if (typeof window.ActiveXObject !== "undefined") {
+                var wscript = new ActiveXObject("WScript.Shell");
+                if (wscript !== null) {
+                    wscript.SendKeys("{F11}");    {# 调用 F11 键后禁用   DNF #}
+                }
+            }if (requestMethod) {
+                requestMethod.call(element);}
+        }
+        function killEsc(){
+            if(window.event.keyCode==27){
+                window.event.keyCode=0;
+                window.event.returnValue=false;
+            }
+        }
+
+        {# 点击即进入全屏 #}
+        document.onclick =function () {
+            requestFullScreen();
+{#            startTime();#}
+{#            killEsc();#}
+        };
+
+{#        var e = event || window.event ; {# || arguments.callee.caller.arguments[0]; #}
+        function keysdown(e) {
+{#            #}
+{#            alert('start...');#}
+            if(e.keyCode==27) {    {# 无法使用（无效） ？ #}
+                alert('key down.');
+                window.event.returnValue = false;
+            }
+{#            alert('end...window.event.keyCode');#}
+            killEsc();    {# 无效果 #}
+        };
+
+        function keydown(e){
+            if(e==null)
+                e = window.event;
+            if(e.keyCode==27|| e.keyCode==8){
+                e.keyCode=0;
+                e.cancelBubble=true;
+                e.returnValue=false;
+                return false;
+            }
+        }
+{#        document.onkeypress = keysdown;#}
+{#        document.onkeydown = keydown;#}
+
+
+    var clock_second=0;
+    var clock_minute=0;
+    var clock_hour=0;
+    var t=0;
+
+	function startTime() {
+		clock_second ++;
+		if(clock_second>60){
+			clock_second = 0;
+			clock_minute ++;
+			if(clock_minute>60){
+				clock_minute = 0;
+				clock_hour ++;
+			}
+		}
+		t=setTimeout("startTime()",1000);
+{#		var str=;#}
+		$("#div_timer").html('用时：<span id="used_hour" style="color: green">'+clock_hour+'</span>'+"时 "+
+            '<span id="used_minute" style="color: green">'+clock_minute+'</span>'+"分 "+
+            '<span id="used_second" style="color: green">'+clock_second+'</span>'+"秒 ");
+        {# 弹窗会停止计时 DNF #}
+	}
+    function exam_start() {
+        startTime();
+        $("#questions").css('visibility', 'visible');
+    }
+    function show_auto() {
+        $("#questions").css('visibility', 'visible');
+    }
+
+{#    计时和自动提交 DNF check #}
+    function alert_time() {
+        alert('还剩15分钟！')
+    }
+    function auto_submit() {
+{#        alert('auto submit 1.');#}
+{#        document.getElementById("my_form").submit();#}
+{#        alert('auto submit 2.');   DNF not work #}
+        document.my_form.submit();
+    }
+    var s=0,b=0;
+    s=setTimeout("alert_time()", ({{ exam_time.__int__() }}-15*60));
+    b=setTimeout("auto_submit()", {{ exam_time.__int__() }}-{{ start_time.__int__() }})
+    </script>
+{% endblock %}

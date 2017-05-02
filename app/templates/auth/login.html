@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}登录{% endblock %}
+{% block style %}
+<link rel="stylesheet" type="text/css" href=" {{ url_for('static', filename = 'css/index.css') }} "/>
+    <style>
+    .loginHtml{background: url(/static/pic/green4.jpg)}
+{#    input{border:1px solid red;background-color:transparent;}#}
+    #submit{background:green;}
+    </style>
+{% endblock %}
+
+{% block body %}
+{{ super() }}
+    <div class="loginHtml"  >
+        <div class="page-header">
+            <h3 style="height: 50px; margin:5px 5px; color: #122b40">Welcome！</h3>
+        </div>
+        <div class="row">
+            {{ wtf.quick_form(form) }}
+
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block bar_show %}
+在线考试系统
+{% endblock %}
+{% block bar_show2 %}
+{% endblock %}
+{% block bar_show3 %}
+{% endblock %}
+
+{% block titlelink2 %}
+{{ url_for('main.index') }}
+{% endblock %}

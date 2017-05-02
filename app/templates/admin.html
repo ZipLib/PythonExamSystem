@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+
+{% block title %}
+    管理员
+{% endblock %}
+
+{% block style %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
+    <style>
+    .click-nav-detail,.click-nav-detail1,.click-nav-detail2,.click-nav-detail3{ float:left;height: 80px;width: 120px;
+        text-align:center;line-height: 80px;font-size:18px;
+        margin-left:10px;margin-top:30px;background: #4DDB;}
+{#    .click-nav-detail1{ float:left;height: 80px;width: 120px;text-align:center;#}
+{#        margin-left:40px;margin-top:30px;background: #4DDBFF;}#}
+    .click-nav-detail3{ margin-left:60px;}
+{#        margin-top:30px;background: #4DDBFF;}#}
+{#    #nav-li,#nav-li2 .click-nav-detail1 li,.click-nav-detail2 li{list-style-type: none}#}
+{#    div #two-li1{background: red;}#}
+{#    div #two-li2{background: deeppink;}#}
+    </style>
+{% endblock %}
+
+{% block body %}
+{{ super() }}
+<div class="row">
+	<div class="col-md-2">
+		<ul class="nav nav-pills nav-stacked" id="adminUL">
+            <div class="div2">
+                <li><a href="#">考生管理</a></li>
+            </div>
+            <div class="div3">
+                <ul>
+                    <li class="active"><a href="{{ url_for('administer.add_examinee') }}">
+                        添加考生</a></li>
+                    <li class="active"><a href="{{ url_for('administer.add_excel_examinee') }}">
+                        导入考生</a></li>
+                    <li> <a href="{{ url_for('administer.examinee_list') }}">
+                        考生列表</a></li>
+                </ul>
+            </div>
+
+            <div class="div2">
+                <li><a href="#">出题员管理</a></li>
+            </div>
+            <div class="div3">
+                <ul>
+                    <li class="active"><a href="{{ url_for('administer.add_question_maker') }}">
+                        添加出题员</a></li>
+                    <li> <a href="{{ url_for('administer.question_maker_list') }}">
+                        出题员列表</a></li>
+                </ul>
+            </div>
+
+            <div class="div2">
+                <li><a href="#">改卷员管理</a></li>
+            </div>
+            <div class="div3">
+                <ul>
+                    <li class="active"><a href="{{ url_for('administer.add_corrector') }}">
+                        添加改卷员</a></li>
+                    <li> <a href="{{ url_for('administer.corrector_list') }}">
+                        改卷员列表</a></li>
+                </ul>
+            </div>
+
+			<div class="div2">
+                <li><a href="#">专业管理</a></li>
+            </div>
+            <div class="div3">
+                <ul>
+                    <li class="active"><a href="{{ url_for('administer.profession',
+                        set_profession=1, profession_list=0) }}">
+                        添加专业</a></li>
+                    <li> <a href="{{ url_for('administer.profession') }}">
+                        专业列表</a></li>
+                </ul>
+            </div>
+            <div class="div2">
+                <li><a href="#">班级管理</a></li>
+            </div>
+            <div class="div3">
+                <ul>
+                    <li class="active"><a href="{{ url_for('administer.class_table',
+                        set_class_table=1, class_table_list=0) }}">
+                        添加班级</a></li>
+                    <li> <a href="{{ url_for('administer.class_table') }}">
+                        班级列表</a></li>
+                </ul>
+            </div>
+            <div class="div2">
+                <li><a href="#">课程管理</a></li>
+            </div>
+            <div class="div3">
+                <ul>
+                    <li class="active"><a href="{{ url_for('administer.add_department') }}">
+                        添加课程</a></li>
+                    <li> <a href="{{ url_for('administer.department_list') }}">
+                        课程列表</a></li>
+                </ul>
+            </div>
+{#            <div class="div2">#}
+{#                <li><a href="#">章节管理</a></li>#}
+{#            </div>#}
+            <div class="div3">
+                <ul>
+                    <li class="active"><a href="{{ url_for('administer.chapter',
+                        set_profession=1, profession_list=0) }}">
+                        添加章节</a></li>
+                    <li> <a href="{{ url_for('administer.chapter') }}">
+                        章节列表</a></li>
+                </ul>
+            </div>
+            <div class="div2">
+                <li><a href="#">链接管理</a></li>
+            </div>
+            <div class="div3">
+                <ul>
+                    <li class="active"><a href="{{ url_for('administer.relation_link',
+                        set_link=1, link_list=0) }}">
+                        添加链接</a></li>
+                    <li>
+                        <a href="{{ url_for('administer.relation_link') }}">
+                            链接列表
+                        </a>
+                    </li>
+                </ul>
+            </div>
+		</ul>
+	</div>
+
+    {% block content %}
+
+        <b>&nbsp;<script>
+                var d = new Date();
+                document.write(d.getFullYear()+' 年'+eval(d.getMonth()+1)+' 月'+d.getDate()+' 日')
+            </script>
+
+            <span id="show_time"></span>
+        </b>
+
+        <div class="container" id="content_show1" style=" ">
+            <div class="click-nav" id="content_show" style="margin-left:130px;margin-top:50px;
+                height:300px; ">
+                <div id="two-li1" style="position: relative;clear: right">
+
+                        <a href="{{ url_for('administer.add_examinee') }}">
+                            <div class="click-nav-detail" >
+
+                                添加考生
+        {#                        <li class=" "><a href="{{ url_for('administer.add_excel_examinee') }}">#}
+        {#                            导入考生</a></li>#}
+        {#                        <li> <a href="{{ url_for('administer.examinee_list') }}">#}
+        {#                            考生列表</a></li>#}
+
+                            </div></a>
+
+                <a href="{{ url_for('administer.add_question_maker') }}">
+                    <div class="click-nav-detail1">
+{#                    <li><a href="#">出题员管理</a></li>#}
+
+
+                        添加出题员
+{#                    <li> <a href="{{ url_for('administer.question_maker_list') }}">#}
+{#                        出题员列表</a></li>#}
+
+                    </div></a>
+
+                <a href="{{ url_for('administer.add_corrector') }}">
+                    <div class="click-nav-detail1">
+{#                    <li><a href="#">改卷员管理</a></li>#}
+
+
+                            添加改卷员
+{#                        <li> <a href="{{ url_for('administer.corrector_list') }}">#}
+{#                            改卷员列表</a></li>#}
+
+                    </div></a>
+
+                <a href="{{ url_for('administer.profession',
+                            set_profession=1, profession_list=0) }}">
+                    <div class="click-nav-detail1">
+{#                    <li><a href="#">专业管理</a></li>#}
+
+
+                            添加专业
+{#                        <li> <a href="{{ url_for('administer.profession') }}">#}
+{#                            专业列表</a></li>#}
+
+                    </div></a>
+                </div>
+                <div id="two-li2" style="position: absolute;margin-top:100px;clear: left;">
+                <a href="{{ url_for('administer.class_table',
+                            set_class_table=1, class_table_list=0) }}">
+                    <div class="click-nav-detail3">
+{#                    <li><a href="#">班级管理</a></li>#}
+
+
+                            添加班级
+{#                        <li> <a href="{{ url_for('administer.class_table') }}">#}
+{#                            班级列表</a></li>#}
+
+                    </div></a>
+                <a href="{{ url_for('administer.add_department') }}">
+                    <div class="click-nav-detail2">
+{#                    <li><a href="#">课程管理</a></li>#}
+
+
+                            添加课程
+{#                        <li> <a href="{{ url_for('administer.department_list') }}">#}
+{#                            课程列表</a></li>#}
+
+                    </div></a>
+                <a href="{{ url_for('administer.chapter',
+                            set_profession=1, profession_list=0) }}">
+                    <div class="click-nav-detail2">
+                            添加章节
+                    </div></a>
+                <a href="{{ url_for('auth.notice',
+                            notice_list=0, set_notice=1) }}">
+                    <div class="click-nav-detail2">
+                            添加通知
+                    </div></a>
+                </div>
+            </div>
+        </div>
+    {% endblock %}
+</div>
+    <br>
+    <div style="margin-bottom: 30px;">
+        <table>
+            <ul>
+                <li>
+                    {% for i in range(relation_links.__len__()) %}
+                    <td><a href="{{ relation_links[i].url }}">{{ relation_links[i].name }}</a></td> &nbsp;
+                    {% endfor %}
+                </li>
+            </ul>
+        </table>
+    </div>
+{% endblock %}
+
+{% block account %}
+    {{ current_user.name }}(管理员)
+{% endblock %}
+
+{% block script %}
+<script>
+
+    $(".div2").click(function(){
+        $(this).next("div").slideToggle("fast")
+                .siblings(".div3:visible").slideUp("fast");
+    });
+
+    function showDate(){
+        var today = new Date();
+        var date = today.getHours()+":"+today.getMinutes()+":"+today.getSeconds();
+        $("#show_time").html(date);
+    }
+    setInterval(showDate,1000);    // 运行函数周期
+
+{#    $(".click-nav-detail").click(function () {#}
+{#        $(this).find("li").eq(0).click#}
+{#    })#}
+
+</script>
+{% endblock %}

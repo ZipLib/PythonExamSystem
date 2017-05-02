@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="shortcut icon" href="{{ url_for('static', filename = 'favicon4.ico') }}"
+              type="image/x-icon" />
+        <title>{% block title %}在线考试系统{% endblock %}</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+
+        {% block style %}
+
+        {% endblock %}
+
+    </head>
+    <body>
+
+        {% block navbar %}
+            <div class="navbar navbar-inverse " role="navigation">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                            <span class="sr-only">导航</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+
+                        <a class="navbar-brand" href="
+                                                    {% block titlelink1 %}
+                                                        {{ url_for('main.introduce') }}
+                                                    {% endblock %}">{% block bar_show %}简介{% endblock %}</a>
+                    </div>
+                    <div class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav">
+                            <li>
+                                <a href="
+                                    {% block titlelink2 %}
+                                        {% if current_user.__tablename__ == 'examinees' %}
+                                            {{ url_for('main.examinee') }}
+                                        {% elif current_user.__tablename__ == 'questionMakers' %}
+                                            {{ url_for('main.question_maker') }}
+                                        {% elif current_user.__tablename__ == 'correctors' %}
+                                            {{ url_for('main.corrector') }}
+                                        {% elif current_user.__tablename__ == 'admins' %}
+                                            {{ url_for('administer.admin') }}
+                                        {% endif %}
+                                    {% endblock %}">{% block bar_show2 %}首页{% endblock %}
+                                </a>
+                            </li>
+
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                            {% if current_user.is_authenticated %}
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+
+                                        {% block account %}账号{% endblock %}<b class="caret"></b>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        {% block personal_list %}
+                                        <li><a href="{{ url_for('auth.information') }}">个人信息</a> </li>
+                                        <li><a href="{{ url_for('auth.notice', notice_list=1) }}">查看通知</a> </li>
+                                        {% endblock %}
+                                        <li><a href="{{ url_for('auth.change_password') }} ">更改密码</a></li>
+                                        <li><a href="{{ url_for('auth.logout') }}">退出</a></li>
+
+                                    </ul>
+                                </li>
+                            {% else %}
+                                <li><a href="{{ url_for('auth.login') }}">{% block bar_show3 %}登录{% endblock %}</a></li>
+
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        {% endblock %}
+
+
+        <div class="container">
+        {% block body %}
+            {% for message in get_flashed_messages() %}
+                <div class="alert alert-warning">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    {{ message }}    {# 系统消息提醒框 #}
+                </div>
+            {% endfor %}
+
+            {% block link %}
+                &nbsp;
+            {% endblock %}
+        {% endblock %}
+        </div>
+
+
+        <script src="{{ url_for('static',filename='js/jquery.min.js') }}"></script>
+        <script src="{{ url_for('static',filename='js/bootstrap.min.js') }}"></script>
+
+{#        <script src="{{ url_for('static',filename='js/paper.js') }}"></script>    自定义 #}
+        {% block script%}
+
+        {% endblock %}
+    </body>
+</html>

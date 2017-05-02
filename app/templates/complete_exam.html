@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+{#    <meta http-equiv="refresh" content='5';url="exam finished list" charset="UTF-8">#}
+    <title>考试结束</title>
+</head>
+<body><div align="center" >
+    <h1>{{ exam_paper_name }}</h1>
+    <h3>答题情况：</h3><br>    {# 用时，用字量  DNF #}
+    <h3>考试用时： {{ (answer_time/60).__int__() }}分 {{ (answer_time%60).__int__() }}秒，
+        用字量：{{ answer_bytes }} ，主动提交： {{ submit_type }}。</h3>
+    <h4>回答题量：{{ question_count[0]+question_count[1]+question_count[2]+question_count[3]+question_count[4] }}<br>
+        ........单选题：{{ question_count[0] }}<br>
+        ........多选题：{{ question_count[1] }}<br>
+        ........判断题：{{ question_count[2] }}<br>
+        ........填空题：{{ question_count[3] }}<br>
+        ........问答题：{{ question_count[4] }}<br>
+    </h4>
+    <br><br><br>
+    5 秒后跳转！
+    <a id="cancel-to" href="">取消跳转.</a>    {# js操作head标签？ #}
+    <a id="jump-to" href="{{ url_for('main.exam_finished_list', is_examinee=1) }}">马上跳转.</a>    {#  #}
+    </div>
+
+</body>
+</html>

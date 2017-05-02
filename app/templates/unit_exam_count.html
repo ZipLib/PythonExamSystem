@@ -1,0 +1,83 @@
+{% extends "exam_finished_list.html" %}
+
+{% block content %}
+    <div class="col-md-10">
+        <table class="table table-striped">
+            <caption>
+                {% if current_user.__tablename__ == 'examinees' %}
+                    我的排名
+                {% else %}
+                    统考统计
+                {% endif %}
+
+            </caption>
+            <thead>
+                <tr>
+                    <th>答卷名</th>
+                    <th>课程</th>
+                    <th>试卷时长</th>
+                    <th>参考人数</th>
+                    <th>总分</th>
+                    <th>平均分</th>
+                {% if current_user.__tablename__ == 'examinees' %}
+                    <th>我的得分</th>
+                    <th>评价</th>
+                    <th>排名</th>
+                {% else %}
+                    <th>不及格人数</th>
+                    <th>及格率</th>
+                {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+            {% if exam_paper %}
+            
+                <tr>
+                    <td>
+                        <a href="{{ url_for('main.exam_paper_detail',
+                        exam_paper_id=exam_paper.id, exam_name=exam_paper.exam_paper_name) }}">
+                            {{ exam_paper.exam_paper_name }}
+                        </a>
+                    </td>
+                    <td>{{ Department.query.filter_by(id=exam_paper.department_id).first().name }}</td>
+                    <td>{{ exam_paper.answer_time_set }}</td>    {# 展示试卷所属课程 #}
+                    <td>{{ scores.__len__() }}</td>
+                    <td>{{ exam_paper.total_score }}</td>
+                    <td>{{ per_score }}</td>
+
+                {% if current_user.__tablename__ == 'examinees' %}
+                    <td>{{ Score.query.filter_by(examinee_id=current_user.id).first().total_score }}</td>
+                    <td>{% if Score.query.filter_by(examinee_id=current_user.id).first().total_score >= 85 %}
+                        优秀
+                        {% elif Score.query.filter_by(examinee_id=current_user.id).first().total_score >= 75 %}
+                        良好
+                        {% elif Score.query.filter_by(examinee_id=current_user.id).first().total_score >= 60 %}
+                        及格
+                        {% else %}
+                        不及格
+                        {% endif %}
+                    </td>
+                    <td>{{ my_order }}</td>
+                {% else %}
+                    <td>{{ bad_score_count }}</td>
+                    <td>{{ good_rate }}</td>
+                {% endif %}
+                </tr>
+            
+            {% endif %}
+
+            </tbody>
+
+        </table>
+
+        {% if pagination %}
+
+            <div class="pagination">
+                <div >
+                    <button style="width: 70px;height: 30px;" onclick="javascript: history.back()">返回</button>
+                </div>
+                {{ macros.pagination_widget(pagination, 'main.exam_finished_list') }}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

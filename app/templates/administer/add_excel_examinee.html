@@ -1,0 +1,28 @@
+{% extends "administer/add_examinee.html" %}
+
+
+{% block style %}
+    {{ super() }}
+    <style>
+{#        div #file{position: relative;float: left;width: 160px;}#}
+        div .submit1{float: left;margin-top: -10px;}
+        #question_type{list-style-type: none;margin-left: -20px;margin-top: 10px;}
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="col-md-6">
+        <div class="page-header" id="page-head">
+            <h3>Excel表导入考生</h3>
+         </div>
+        <form action="" method="post" enctype="multipart/form-data">
+            <div id="file" class="file">
+                {{ form.file.label }} {{ form.file() }}
+            </div>
+            <div style="display: none">{{ form.question_type() }}</div>
+            <br>
+            <div id="submit1" class="submit1">
+                {{ form.submit(value='提交Excel') }}
+            </div>
+        </form>
+    </div>
+{% endblock %}

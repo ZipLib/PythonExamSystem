@@ -1,0 +1,69 @@
+
+{% extends "admin.html" %}
+{% import "_macros.html" as macros %}
+
+
+{% block content %}
+    <div class="col-md-10">
+        <table class="table table-striped">
+            <caption>出题员列表</caption>
+            <thead>
+            <tr>
+                <th>工号</th>
+                <th>名字</th>
+
+                <th>身份证</th>
+                <th>科室</th>
+                <th>修改</th>
+                <th>删除</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for question_maker in question_makers %}
+            <tr>
+                <td>{{ question_maker.account}}</td>
+                <td>{{ question_maker.name}}</td>
+                <td>{{ question_maker.id_card }}</td>
+                <td>{{ question_maker.department.name }}</td>
+                <td>
+                    <a href="{{ url_for('administer.change_question_maker', question_maker_name=question_maker.name,
+                       depart_name=question_maker.department.name|full_fill_string) }}"
+                       class="btn btn-warning" role="button">修改</a>
+                </td>
+                <td>
+                    <a href="javascript:delete_question_maker({{question_maker.id}})" class="btn btn-danger" role="button" id="delete_question_maker">删除</a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {% if pagination %}
+            <div class="pagination">
+                {{ macros.pagination_widget(pagination, 'administer.question_maker_list') }}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+    <script>
+        function delete_question_maker(question_maker_id) {
+            var data={"question_maker_id": question_maker_id}
+
+            $.ajax({
+                type: 'POST',
+                url: "{{ url_for('administer.delete_question_maker') }}",
+                data: data,
+                dataType: 'json',    // 注意：这里是指希望服务端返回json格式的数据
+                success: function(data) {
+                    window.location.reload()
+                },
+                error: function(xhr, type) {
+                    alert('something wrong')
+                }
+            });
+        }
+    </script>
+{% endblock %}

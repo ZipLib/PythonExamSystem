@@ -1,0 +1,247 @@
+{% extends "examinee.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}
+    出卷
+{% endblock %}
+
+{% block style %}
+{{ super() }}
+<style>
+
+</style>
+{% endblock %}
+
+{% block body %}
+{{ super() }}
+{% endblock %}
+
+{% block content %}
+
+{#    <div class="col-md-6">#}
+{#        <table class="table table-striped">#}
+{#            <caption>考试方式</caption>#}
+{#        </table>#}
+{#        <div style="float: left">#}
+{#            {{ wtf.quick_form(form) }}#}
+{#        </div>#}
+{#    </div>#}
+
+    <div class="col-md-6">
+        <table class="table table-striped">
+            <caption>考试方式</caption>
+        </table>
+
+        <form action="{{ url_for('.exam_self') }}" method="post" class="form" role="form">
+          <div style="float: left">
+          <input id="csrf_token" name="csrf_token" type="hidden"
+                 value="1489567690##0d40f7569c7cb20177fb3b6830c8d44905cf3294">
+
+            <div class="form-group "><label class="control-label" for="exam_title">试卷标题</label>
+                  <input class="form-control" id="exam_title" name="exam_title" type="text" value="HTML测试自检1">
+            </div>
+            <div class="form-group "><label class="control-label" for="total_score">总分</label>
+                  <input class="form-control" id="total_score" name="total_score" type="text" value="100">
+            </div>
+            <div class="form-group "><label class="control-label" for="exam_time">限时</label>
+
+                  <select class="form-control" id="exam_time" name="exam_time">
+
+                      <option value="0">无</option>
+                      <option value="30">30分钟</option>
+                      <option value="60">60分钟</option>
+                  </select>
+                <input name="exam_time_input" style="width: 150px" type="text" maxlength="3" placeholder="设定时间"/>
+
+            </div>
+
+            <div class="form-group ">
+                <label class="control-label" for="department">课程</label>
+                <select class="form-control" id="department" name="department">    {# 有效按钮区域？ #}
+
+                  <option value="0">无</option>
+                  {% for department in departments  %}
+                  <option value="{{ department.id }}">{{ department.name }}</option>
+                  {% endfor %}
+                </select>
+            </div>
+
+            <div class="checkbox">
+              <label>
+                <input id="question_type_single" name="question_type_single" type="checkbox" value="1">
+                  单选题
+              </label>
+            </div>
+
+            <div class="checkbox">
+              <label>
+                <input id="question_type_multi" name="question_type_multi" type="checkbox" value="2">
+                  多选题
+              </label>
+            </div>
+
+            <div class="checkbox">
+              <label>
+                <input id="question_type_judge" name="question_type_judge" type="checkbox" value="3">
+                  判断题
+              </label>
+            </div>
+
+            <div class="checkbox">
+              <label>
+                <input id="question_type_fill" name="question_type_fill" type="checkbox" value="4">
+                  填空题
+              </label>
+            </div>
+
+{#            <div class="checkbox">    没人（自己不算）批改，没有问答。#}
+{#              <label>#}
+{#                <input id="question_type_answer" name="question_type_answer" type="checkbox" value="">#}
+{#                  问答题#}
+{#              </label>#}
+{#            </div>#}
+
+              <input class="btn btn-default" id="submit" name="submit" type="submit" value="提交">
+        </div>
+            <div style="float: left; margin-top: 320px; margin-left: -80px; line-height:10px">
+                <div id="question-detail-s" style="float: left; visibility: hidden;">
+                    题量：
+                    <select style="width: 50px" id="single_number" name="single_number">
+                        <option value="0" selected="selected">0道</option>
+                        <option value="5">5道</option>
+                        <option value="10">10道</option>
+                        <option value="15">15道</option>
+                    </select>
+                    <input name="single_number_input" style="width: 50px" type="text" maxlength="50"/>
+
+                    难度：
+                    <select style="width: 50px" id="single_difficulty" name="single_difficulty">
+                        <option value="0" selected="selected">无</option>
+                        <option value="1">1星</option>
+                        <option value="2">2星</option>
+                        <option value="3" >3星</option>
+                        <option value="4">4星</option>
+                        <option value="5">5星</option>
+                    </select>
+                </div>
+                <div id="question-detail-m" style=" visibility: hidden;">
+                    题量：
+                    <select style="width: 50px" id="multi_number" name="multi_number">
+                        <option value="0" selected="selected">0道</option>
+                        <option value="5">5道</option>
+                        <option value="10">10道</option>
+                        <option value="15">15道</option>
+                    </select>
+                    <input name="multi_number_input" style="width: 50px" type="text" maxlength="50"/>
+
+                    难度：
+                    <select style="width: 50px" id="multi_difficulty" name="multi_difficulty">
+                        <option value="0" selected="selected">无</option>
+                        <option value="1">1星</option>
+                        <option value="2">2星</option>
+                        <option value="3">3星</option>
+                        <option value="4">4星</option>
+                        <option value="5">5星</option>
+                    </select>
+                </div>
+                <div id="question-detail-j" style=" visibility: hidden;">
+                    题量：
+                    <select style="width: 50px" id="judge_number" name="judge_number">
+                       <option value="0" selected="selected">0道</option>
+                        <option value="5">5道</option>
+                        <option value="10">10道</option>
+                        <option value="15">15道</option>
+                    </select>
+                    <input name="judge_number_input" style="width: 50px" type="text" maxlength="50"/>
+
+                    难度：
+                    <select style="width: 50px" id="judge_difficulty" name="judge_difficulty">
+                        <option value="0" selected="selected">无</option>
+                        <option value="1">1星</option>
+                        <option value="2">2星</option>
+                        <option value="3">3星</option>
+                        <option value="4">4星</option>
+                        <option value="5">5星</option>
+                    </select>
+                </div>
+                <div id="question-detail-f" style=" visibility: hidden;">
+                    题量：
+                    <select style="width: 50px" id="fill_number" name="fill_number">
+                       <option value="0" selected="selected">0道</option>
+                        <option value="5">5道</option>
+                        <option value="10">10道</option>
+                        <option value="15">15道</option>
+                    </select>
+                    <input name="fill_number_input" style="width: 50px" type="text" maxlength="50"/>
+
+                    难度：
+                    <select style="width: 50px" id="fill_difficulty" name="fill_difficulty">
+                        <option value="0" selected="selected">无</option>
+                        <option value="1">1星</option>
+                        <option value="2">2星</option>
+                        <option value="3">3星</option>
+                        <option value="4">4星</option>
+                        <option value="5">5星</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+    <script>
+    $(document).ready(function(){
+{#       $("#question-detail-s").css("display", "none");#}
+{#       $("#question_type_single").click(function(){#}
+{#           #}
+{#            $("#question-detail-s").animate({#}
+{#                marginLeft:parseInt($("#question-detail-s").css('marginLeft'),10)==0 ?#}
+{#                    $("#question-detail-s").outerWidth() : 0#}
+{#            });#}
+{#        });#}
+        $("#question_type_single").click(function(){
+            if($("#question-detail-s").css("visibility")=='hidden'){
+                $("#question-detail-s").css("visibility","visible");
+            }
+            else{
+                $("#question-detail-s").css("visibility","hidden")
+            }
+       });
+        $("#question_type_multi").click(function(){
+            if($("#question-detail-m").css("visibility")=='hidden'){
+                $("#question-detail-m").css("visibility","visible");
+            }
+            else{
+                $("#question-detail-m").css("visibility","hidden")
+            }
+       });
+        $("#question_type_judge").click(function(){
+            if($("#question-detail-j").css("visibility")=='hidden'){
+                $("#question-detail-j").css("visibility","visible");
+            }
+            else{
+                $("#question-detail-j").css("visibility","hidden")
+            }
+       });
+        $("#question_type_fill").click(function(){
+            if($("#question-detail-f").css("visibility")=='hidden'){
+                $("#question-detail-f").css("visibility","visible");
+            }
+            else{
+                $("#question-detail-f").css("visibility","hidden")
+            }
+       });
+        $("#question_type_answer").click(function(){
+            if($("#question-detail-a").css("visibility")=='hidden'){
+                $("#question-detail-a").css("visibility","visible");
+            }
+            else{
+                $("#question-detail-a").css("visibility","hidden")
+            }
+       });
+    });
+    </script>
+
+{% endblock %}

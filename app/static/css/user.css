@@ -1,0 +1,6 @@
+.div2 li{font-size:18px;}
+.div3{display: none; font-size:16px;}
+.div3 ul{margin:0;padding:0;}
+.div3 li{ height:30px; line-height:30px; cursor:pointer; list-style:none;
+    border-bottom:#ccc 1px dotted; text-align:center;}
+.div3 li.active{font-weight: bold}

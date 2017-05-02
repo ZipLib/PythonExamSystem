@@ -1,0 +1,190 @@
+{% if current_user.__tablename__ == 'admins' %}
+{% extends "admin.html" %}
+{% elif current_user.__tablename__ == 'questionMakers' %}
+{% extends "question_maker.html" %}
+{% elif current_user.__tablename__ == 'correctors' %}
+{% extends "corrector.html" %}
+{% else %}
+{% extends "examinee.html" %}
+{% endif %}
+{% import "_macros.html" as macros %}
+{% import "bootstrap/wtf.html" as wtf %}
+{#{% extends "auth/user_information.html" %}#}
+
+{% block style %}
+{{ super() }}
+    <style>
+        #notice_content,#notice_title,#title_color,#notice_order,#reader{width:500px;}
+        #notice_content{height: 100px;word-break: break-all}
+        .container_in{width: 700px;}
+    </style>
+{% endblock %}
+
+
+    {% block content %}
+    <div class="container_in" id="content_show1" style="text-align:left;position: absolute;
+        margin-left:150px;margin-top:10px">
+            <div class="click-nav" id="content_show" style="margin-left:50px;margin-top:10px;
+                height:300px; ">
+                <div id="two-li1" style="position: relative;clear: right">
+        {% if display_notice %}
+
+            <h1 align="center" style="color: blue;"></h1>
+            <h2 align="center" style="color: {{ notice.title_color }};">
+                {{ notice.notice_title }}
+            </h2>
+            <h4 align="center">
+                {{ notice.notice_content }}
+            </h4>
+            <div style="position: absolute;margin-top: -100px;">
+                <button onclick="javascript:history.back()">
+                    回到列表
+                </button>
+            </div>
+        {% endif %}
+        {% if empty %}
+            <h1>空空如也。</h1>
+            {% if current_user.__tablename__ == 'admins' %}    {# admin 阅读人设置 框 DNF #}
+                <a href="{{ url_for('auth.notice', set_notice=1, is_admins=1) }}">
+                    <button>管理添加通知</button>
+                </a>
+            {% elif current_user.__tablename__ == 'questionMakers' or current_user.__tablename__ == 'correctors' %}
+                <a href="{{ url_for('auth.notice', set_notice=1) }}">
+                    <button>添加通知</button>
+                </a>
+            {% endif %}
+        {% endif %}
+        {% if pagination %}
+
+            <table class="table table-striped">
+                <caption style="font-size: 25px;font-weight: 100;">
+                    通知列表&nbsp;&nbsp;
+                        <span style="font-size: small"> 列表项：{{ pagination.items.__len__() }} &nbsp;
+                            {% if current_user.__tablename__ != 'examinees' %}
+                                {% if current_user.__tablename__ == 'admins' %}
+                                    <a href="{{ url_for('auth.notice', notice_list=0, set_notice=1, is_admins=1) }}">
+                                        <button>管理添加通知</button>
+                                    </a>
+                                {% elif current_user.__tablename__ == 'questionMakers' or
+                                    current_user.__tablename__ == 'correctors' %}
+                                    <a href="{{ url_for('auth.notice', notice_list=0, set_notice=1) }}">
+                                        <button>添加通知</button>
+                                    </a>
+                                {% endif %}
+                                &nbsp;&nbsp;&nbsp;
+                                <div style="position: absolute;margin-left:300px;margin-top:-24px;width: 500px;">
+                                    <form action="{{ url_for('auth.notice') }}" method="post" >
+                                        <div style="float: left">
+                                            <input class="search-notice" name="search_text" type="text"
+                                                   placeholder="标题关键字">
+                                        </div>
+                                        <div style="float: left">
+                                            <input class="search-notice-submit" type="submit" value="查询">
+        {#                                    <a href="{{ url_for('auth.notice', notice_list=0, set_notice=1) }}">#}
+        {#                                        <button>查询</button>#}
+        {#                                    </a>#}
+                                        </div>
+                                    </form>
+                                </div>
+                            {% endif %}
+                        </span>
+                </caption>
+                <thead>
+                    <tr>
+                        <th>标题</th>
+                        <th>内容</th>
+                        <th>次序</th>
+                        <th>颜色</th>
+                        <th>日期</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for notice in pagination.items %}
+                        <tr>
+                            <td><a href="{{ url_for('auth.notice', notice_list=0, notice_id=notice.id,
+                                    display_notice=1) }}" >
+                                    {{ notice.notice_title }}
+                                </a>
+                            </td>
+                            <td>{{ notice.notice_content }}</td>
+                            <td>{{ notice.order }}</td>
+                        {% if notice.title_color == 'red' %}
+                            <td>红色</td>
+                        {% elif notice.title_color == 'orange' %}
+                            <td>橙色</td>
+                        {% elif notice.title_color == 'green' %}
+                            <td>绿色</td>
+                        {% endif %}
+                            <td>{# {{ notice.show_time }} #}</td>
+                            <td>
+                                {% if current_user.__tablename__ != 'examinees' %}
+                                    <button id="delete_question" onclick="delete_notice({{ notice.id }})"
+                                        class="btn btn-danger">删除</button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="pagination">
+                {{ macros.pagination_widget(pagination, 'auth.notice') }}
+            </div>
+
+        {% endif %}
+
+        {% if form %}
+            <div class="loginHtml">
+
+                <div class="row">
+                    <span style="font-size:18px;color:green">发布通知</span><br>
+                    {{ wtf.quick_form(form) }}
+                </div>
+            </div>
+        {% endif %}
+                </div></div></div>
+    {% endblock %}
+
+{% block script %}
+    {{ super() }}
+    <script>
+        function delete_notice(id) {
+            $.ajax({
+                type: 'POST',
+                url: "{{ url_for('auth.delete_notice') }}",
+                data: { notice_id: id },
+                dataType: 'json',
+                success: function (data) {
+                    window.location.reload()
+                },
+                error: function (xhr, type) {
+                    alert('delete question error type: '
+                        +type+'---- status:'+xhr.status+'---- readyState:'+xhr.readyState
+                        +'---- responseText: '+xhr.responseText)
+                }
+            })
+        }
+// 查找通知 test
+        function search_notice(search_text) {
+            $.ajax({
+                type: 'POST',
+                url: "{{ url_for('auth.notice') }}",
+                data: { search_text: search_text },
+                dataType: 'json',
+                success: function (data) {
+                    window.location.reload()
+                },
+                error: function (xhr, type) {
+                    alert('delete question error type: '
+                        +type+'---- status:'+xhr.status+'---- readyState:'+xhr.readyState
+                        +'---- responseText: '+xhr.responseText)
+                }
+            })
+        }
+{#        var search_text = $(".search-notice").val();    {# 调用查询 #}
+{#        $(".search-notice-submit").click(function () {#}
+{#            search_notice(search_text);#}
+{#        })#}
+    </script>
+{% endblock %}

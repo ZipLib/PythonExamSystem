@@ -1,0 +1,25 @@
+{% extends "admin.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}
+    人员管理
+{% endblock %}
+
+{% block style %}
+    {{ super() }}
+    <style>
+        #page-head{border:0px; margin:0px;}
+    </style>
+{% endblock %}
+
+
+{% block content %}
+    <div class="col-md-6">
+        <div class="page-header" id="page-head">
+            {% block content_title %}
+                <h3>添加考生</h3>
+            {% endblock %}
+         </div>
+        {{ wtf.quick_form(form) }}
+    </div>
+{% endblock %}

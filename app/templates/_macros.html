@@ -1,0 +1,50 @@
+{% macro pagination_widget(pagination, endpoint, question_type=0, is_examinee=0, is_corrected=0, unit_count=0) %}
+    {#  分页模板宏 chapter11,122  #}
+    <ul class="pagination">
+        <li {% if not pagination.has_prev %}
+               class="disabled"
+            {% endif %}>
+            <a href="{% if pagination.has_prev %}
+                            {{ url_for(endpoint, page=pagination.prev_num, question_type=question_type,
+                            is_examinee=is_examinee, is_corrected=is_corrected,
+                            unit_count=unit_count ) }}
+
+                         {% else %} #
+                     {% endif %} ">
+                &laquo;
+            </a>
+        </li>
+        {% for p in pagination.iter_pages() %}
+            {% if p %}
+                {% if p == pagination.page %}
+                <li class="active">
+                    <a href="{{ url_for(endpoint, page = p, question_type=question_type,
+                            is_examinee=is_examinee, is_corrected=is_corrected,
+                            unit_count=unit_count ) }}">{{ p }}</a>
+
+                </li>
+                {% else %}
+                <li>
+                    <a href="{{ url_for(endpoint, page = p, question_type=question_type,
+                            is_examinee=is_examinee, is_corrected=is_corrected,
+                            unit_count=unit_count ) }}">{{ p }}</a>
+
+                </li>
+                {% endif %}
+            {% else %}
+            <li class="disabled"><a href="#">&hellip;</a></li>
+            {% endif %}
+        {% endfor %}
+        <li{% if not pagination.has_next %} class="disabled"{% endif %}>
+            <a href="{% if pagination.has_next %}
+                            {{ url_for(endpoint, page=pagination.next_num, question_type=question_type,
+                            is_examinee=is_examinee, is_corrected=is_corrected,
+                            unit_count=unit_count ) }}
+
+                        {% else %} #
+                     {% endif %}">
+                &raquo;
+            </a>
+        </li>
+    </ul>
+{% endmacro %}

@@ -1,0 +1,21 @@
+/*examinee.html*/
+.div2 li{font-size:18px;}
+.div3{display: none; font-size:16px;}
+.div3 ul{margin:0;padding:0;}
+.div3 li{ height:30px; line-height:30px; cursor:pointer; list-style:none;
+    border-bottom:#ccc 1px dotted; text-align:center;}
+.div3 li.active{font-weight: bold}
+
+/*examination.html*/
+.input_click{color:green;}
+div input#submit{background:#5cb85c; }
+caption b{font-size: xx-large;}
+/*table2 label{line-height:20px;font-size:15px;}*/
+
+/*question list*/
+#title{width:300px;}th{width:80px;}
+.my-content-nav{margin-left:-34px;margin-bottom:60px;background:blue;}.my-content-nav ul{}
+.my-content-nav ul li{float:left; width:20%;list-style-type:none;}
+.my-content-nav ul button{width:100%;height:40px;}
+.my-content-nav ul button:hover{background:#66CDAA;}
+.my-buttons::choices{background:#66CDAA;}

@@ -1,0 +1,64 @@
+{% extends "question_maker.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block style %}
+{{ super() }}
+    <style>
+    #single_number,#multi_number,#judge_number,#fill_number,#answer_number,#difficulty_id {width: 90px;}
+    .question_number {float:left}
+    #profession,#classes,#department,#chapter{width: 180px;}
+    </style>
+<style>
+</style>
+{% endblock %}
+
+{% block body %}
+{{ super() }}
+{% endblock %}
+
+{% block content %}
+    <div class="col-md-6">
+        <table class="table table-striped">
+            <caption>出卷统考</caption>
+        </table>
+        {{ wtf.quick_form(form) }}
+    </div>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+    <script src="{{ url_for('static', filename='js/jedate/jedate.js') }}"></script>
+    <script>
+    $(document).ready(function() {
+        $("#profession").parent().css("float", "left");
+        $("#classes").parent().css("float", "left");
+        $("#department").parent().css("float", "left");
+{#        $("#chapter").parent().css("float", "left");#}
+
+        $("#difficulty_id").parent().css("float", "left");
+        $("#single_number").parent().css("float", "left");
+        $("#multi_number").parent().css("float", "left");
+        $("#judge_number").parent().css("float", "left");
+        $("#fill_number").parent().css("float", "left");
+
+    $("#profession").selected().alert('jjjjjjjjjj')
+    });
+{#    jeDate({#}
+{#		dateCell:"#indate",//isinitVal:true,#}
+{#		format:"YYYY-MM",#}
+{#		isTime:false, //isClear:false,#}
+{#		minDate:"2015-10-19 00:00:00",#}
+{#		maxDate:"2016-11-8 00:00:00"#}
+{#	})#}
+
+{#    调用 （外）包#}
+    jeDate({
+		dateCell:"#start_time",
+		format:"YYYY-MM-DD hh:mm:ss",
+		isinitVal:true,
+		isTime:true, //isClear:false,
+		minDate:"2014-09-19 00:00:00",
+		okfun:function(val){alert(val)}
+	})
+    </script>
+{% endblock %}

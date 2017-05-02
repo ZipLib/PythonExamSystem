@@ -1,0 +1,129 @@
+
+{% extends "question_maker.html" %}
+{% import "_macros.html" as macros %}
+
+{% block style %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/exam.css') }}">
+{% endblock %}
+
+{% block content %}
+
+    <div class="col-md-10">
+       <div class="my-content-nav">
+            <ul>
+                <li><a href="{{ url_for('main.question_list', question_type='单选题') }}">
+                    <button class="my-buttons" onclick="button_click(this)">
+                    单选题</button></a> </li>
+                <li><a href="{{ url_for('main.question_list', question_type='多选题') }}">
+                    <button onclick="button_click(this)">
+                    多选题</button></a></li>
+                <li><a href="{{ url_for('main.question_list', question_type='判断题') }}">
+                    <button onclick="button_click(this)">
+                    判断题</button></a></li>
+                <li><a href="{{ url_for('main.question_list', question_type='填空题') }}">
+                    <button onclick="button_click(this)">
+                    填空题</button></a></li>
+                <li><a href="{{ url_for('main.question_list', question_type='问答题') }}">
+                    <button onclick="button_click(this)">
+                    问答题</button></a></li>
+            </ul>
+    </div>
+
+        <table class="table table-striped">
+            <caption style="font-size: 25px;font-weight: 100;">
+            {{ question_type }}列表&nbsp;&nbsp;<span style="font-size: small"> 题量：{{ pagination.items.__len__() }}</span>
+            </caption>
+            <thead>
+            <tr>
+                <th id="title"><label>题目</label></th>
+                <th style="width:100px;">难度</th>
+                <th>分值</th>
+                <th>课程</th>
+                {% if question_type != '判断题' and question_type != '问答题' and question_type != '填空题' %}
+                <th>选项1</th>
+                <th>选项2</th>
+                <th>选项3</th>
+                <th>选项4</th>
+                {% endif %}
+                <th>答案</th>
+                <th><div class="div2" style="float: left;">
+                        <button>删除量</button>
+                    </div>
+                    <div class="div3" style="float:left;width:100px;position:absolute;
+                                            background: none;margin-left:60px">
+                        <ul>
+                            <li style="font-size: small" class="active">
+                                <a href="{{ url_for('main.delete_question',
+                                    page=pagination.iter_pages(), question_type=question_type, delete_page=1) }}">
+                                    删除此页</a></li>
+                            <li style="font-size: small">
+                                <a href="{{ url_for('main.delete_question', all=True,
+                                question_type=question_type) }}">
+                                    清空列表</a></li>
+                        </ul>
+                    </div>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for question in questions %}
+            <tr>
+                <td>{{ question.question }}</td>
+                <td>{{ question.difficulty }}</td>
+                <td>{{ question.score }}</td>
+                <td>{{ question.department }}</td>
+                {% if question_type != '判断题' and question_type != '问答题' and question_type != '填空题' %}
+                <td>{{ question.option1 }}</td>
+                <td>{{ question.option2 }}</td>
+                <td>{{ question.option3 }}</td>
+                <td>{{ question.option4 }}</td>
+                {% endif %}
+                <td>{{ question.answer }}</td>
+                <td>
+                    <button id="delete_question" onclick="delete_question({{ question.id }}, '{{ question_type }}')"
+                            class="btn btn-danger">删除</button>
+                </td>
+                <td id="hide_id" style="display: none">{{ question.id }}</td>
+                <td id="hide_type" style="display: none">{{ question_type }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {% if pagination %}    {# 题型分页模板 #}
+            <div class="pagination">
+                {{ macros.pagination_widget(pagination, 'main.question_list', question_type) }}
+
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+{#<script src="{{ url_for('static', filename='js/paper.js') }}"></script>#}
+    <script>
+
+        function delete_question(question_id, question_type) {
+            $.ajax({
+                type: 'POST',
+                url: "{{ url_for('main.delete_question') }}",
+                data: {
+                    question_id: question_id,
+                    question_type: question_type
+                },
+                dataType: 'json',
+                success: function (data) {
+                    window.location.reload()
+                },
+                error: function (xhr, type) {
+                    alert('delete question error type: ' + question_id +'and'+question_type
+                        +type+'---- status:'+xhr.status+'---- readyState:'+xhr.readyState
+                        +'---- responseText: '+xhr.responseText)
+                }
+            })
+        }
+
+    </script>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends "examinee.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}
+   出题员
+{% endblock %}
+{% block style %}
+    {{ super() }}
+   <style>
+   #quick-nav1,#quick-nav2{text-align:center;line-height:80px;margin-top:30px;margin-left:30px;
+       float:left;width: 100px;height: 80px;background: green;}
+   </style>
+{% endblock %}
+
+
+{% block personal_list %}
+    <li><a href="{{ url_for('auth.information', user=current_user) }}">个人信息</a> </li>
+    <li><a href="{{ url_for('auth.notice', notice_list=1) }}">查看通知</a> </li>
+{% endblock %}
+
+{#{% block titlelink1 %}#}
+{#    {{ url_for('main.introduce') }}#}
+{#{% endblock %}#}
+{##}
+{#{% block titlelink2 %}#}
+{#    {{ url_for('main.question_maker') }}#}
+{#{% endblock %}#}
+
+
+{% block li_list_head1 %}<a href="#">出题管理</a>{% endblock %}
+
+{% block li_list_body1 %}<a href="{{ url_for('main.add_question') }}">添加题目</a>{% endblock %}
+{% block li_list_body2 %}<a href="{{ url_for('main.add_excel_questions') }}">导入题目</a>{% endblock %}
+{% block li_list_body4 %}
+    <li class="active">
+        <a href="{{ url_for('main.question_list')}}">
+            题目列表
+        </a>
+    </li>
+{% endblock %}
+
+{% block li_list_body3 %}
+{% endblock %}
+
+{% block div_li_list_head %}
+    <div class="div2">
+        <li><a href="#">考试管理</a></li>
+    </div>
+    <div class="div3">
+        <ul>
+            <li class="active"><a href="{{ url_for('main.make_exam_paper') }}">生成试卷</a></li>
+            <li> <a href="{{ url_for('main.exam_paper_list') }}">试卷列表</a></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+    {% block hello %}
+    {% endblock %}
+
+    {% block quick_add %}
+    <div class="col-md-2" style="width: 70%;height:300px ">
+        <a href="{{ url_for('main.add_excel_questions') }}">
+            <div id="quick-nav1">
+                <span>导入题目</span>
+            </div>
+        </a>
+        <a href="{{ url_for('main.make_exam_paper') }}">
+            <div id="quick-nav2">
+                <span>生成试卷</span>
+            </div>
+        </a>
+    </div>
+    {% endblock %}
+{% endblock %}

@@ -1,0 +1,111 @@
+{% extends "admin.html" %}
+{% import "_macros.html" as macros %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+
+{% block content %}
+    <div class="col-md-10">
+    {% if display_class_table %}
+        <h1 align="center" style="color: blue;">班级</h1>
+        <h2 align="center" style="color: {{ class_table.title_color }};">
+            {{ class_table.name }}
+        </h2>
+{#            <h4 align="center">#}
+{#                {{ class_table.class_table_content }}#}
+{#            </h4>#}
+        <div style="position: absolute;margin-top: -150px;">
+            <button onclick="javascript:history.back()">
+                回到列表
+            </button>
+        </div>
+    {% endif %}
+    {% if empty %}
+        <h1>没有设置班级，请添加。</h1>
+        {% if current_user.__tablename__ != 'examinees' %}
+            <a href="{{ url_for('administer.class_table', set_class_table=1) }}">
+                <button>添加班级</button>
+            </a>
+        {% endif %}
+    {% endif %}
+    {% if pagination %}
+        <table class="table table-striped">
+            <caption style="font-size: 25px;font-weight: 100;">
+                班级列表&nbsp;&nbsp;
+                    <span style="font-size: small"> 列表项：{{ pagination.items.__len__() }} &nbsp;
+                        {% if current_user.__tablename__ != 'examinees' %}
+                            <a href="{{ url_for('administer.class_table', class_table_list=0, set_class_table=1) }}">
+                                <button>添加</button>
+                            </a>
+                        {% endif %}
+                    </span>
+            </caption>
+            <thead>
+                <tr>
+                    <th>班级名称</th>
+                    <th>修改</th>
+                    <th>删除</th>
+{#                        <th>创建日期</th>#}
+                </tr>
+            </thead>
+            <tbody>
+                {% for class_table in pagination.items %}
+                    <tr>
+                        <td><a href="{{ url_for('administer.class_table', class_table_list=0, class_table_id=class_table.id,
+                                display_class_table=1) }}" >
+                                {{ class_table.name }}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('administer.class_table', set_class_table=1, class_table_list=0,
+                                class_table_id=class_table.id) }}">
+                                <button id="change_question" class="btn btn-warning">修改
+                                </button>
+                            </a>
+                        </td>
+                        <td>
+                            {% if current_user.__tablename__ != 'examinees' %}
+                                <button id="delete_question" onclick="delete_class_table({{ class_table.id }})"
+                                    class="btn btn-danger">删除</button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="pagination">
+            {{ macros.pagination_widget(pagination, 'administer.class_table') }}
+        </div>
+    {% endif %}
+
+    {% if form %}
+        <div class="loginHtml">
+            <div class="row">
+                {{ wtf.quick_form(form) }}
+            </div>
+        </div>
+    {% endif %}
+    </div>
+{% endblock %}
+
+{% block script %}
+    {{ super() }}
+    <script>
+        function delete_class_table(id) {
+            $.ajax({
+                type: 'POST',
+                url: "{{ url_for('administer.delete_class_table') }}",
+                data: { class_table_id: id },
+                dataType: 'json',
+                success: function (data) {
+                    window.location.reload()
+                },
+                error: function (xhr, type) {
+                    alert('delete class_table error type: '
+                        +type+'---- status:'+xhr.status+'---- readyState:'+xhr.readyState
+                        +'---- responseText: '+xhr.responseText)
+                }
+            })
+        }
+    </script>
+{% endblock %}

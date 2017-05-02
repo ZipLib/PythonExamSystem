@@ -1,0 +1,205 @@
+{% extends "examinee.html" %}
+{% import "_macros.html" as macros %}
+
+{% block style %}
+{{ super() }}
+<style>
+
+</style>
+{% endblock %}
+
+{% block body %}
+
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-warning">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ message }}    {# 系统消息提醒框 #}
+        </div>
+    {% endfor %}
+
+    {% block content %}
+
+    <div class="col-md-10">
+        <table class="table table-striped">
+            <caption>
+                {% if current_user.__tablename__ == 'examinees' %}
+                    完成答卷
+                {% elif unit_count %}
+                    统计分数
+                {% elif is_corrected %}
+                    已改答卷
+                {% else %}
+                    待改答卷
+                {% endif %}
+
+            </caption>
+            <thead>
+            <tr>
+                <th>答卷名</th>
+            {% if current_user.__tablename__ == 'examinees' %}
+                <th>排名详情</th>
+            {% elif unit_count %}
+                <th>&nbsp;</th>
+            {% else %}
+                <th>考生姓名</th>
+            {% endif %}
+                <th>考试科目</th>
+            {% if unit_count %}
+
+            {% else %}
+                <th>考试用时</th>
+                <th>客观题得分</th>
+                <th>主观题得分</th>
+                <th>总得分</th>
+            {% endif %}
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% if  pagination %}
+                {% for exam_finished in pagination.items %}    {# 遍历 答卷 #}
+                    {% if current_user.id == exam_finished.examinee_id or current_user.__tablename__ == 'correctors'%}
+            <tr>
+                <td>
+                    {% if unit_count and
+                    ExamPaper.query.filter(ExamPaper.id == exam_finished.exam_paper_id).first().is_examinees %}
+                        {{ ExamPaper.query.filter(ExamPaper.id == exam_finished.exam_paper_id).first().exam_paper_name }}
+                    {% else %}
+                        {% if unit_count %}
+                            <a href="{{ url_for('main.unit_exam_count',
+                            exam_paper_id=exam_finished.exam_paper_id, examinee_id=exam_finished.examinee_id) }}">
+
+                        {% elif is_corrected %}
+                            {% if current_user.__tablename__ == 'correctors' and
+                            ExamPaper.query.filter(ExamPaper.id == exam_finished.exam_paper_id).first().is_examinees %}
+                                <a href="#" style="color: black;text-decoration: none">
+                            {% else %}
+                                <a href="{{ url_for('main.corrected_exam_paper',
+                                exam_paper_id=exam_finished.exam_paper_id, examinee_id=exam_finished.examinee_id) }}">
+                            {% endif %}
+                        {% else %}
+                            <a href="{{ url_for('main.exam_finished_detail',
+                            exam_paper_id=exam_finished.exam_paper_id, examinee_id=exam_finished.examinee_id) }}">
+                        {% endif %}
+                        {{ ExamPaper.query.filter(ExamPaper.id == exam_finished.exam_paper_id).first().exam_paper_name }}
+                    </a>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if current_user.__tablename__ == 'examinees'
+                        and ExamPaperFinished.query.filter_by(exam_paper_id=exam_finished.exam_paper_id)
+                        .filter_by(examinee_id=current_user.id).first()
+                        .is_corrected %}
+                        {% if ExamPaper.query.filter_by(id=exam_finished.exam_paper_id).first().is_examinees %}
+                            自考
+                        {% else %}
+                            <a style="color: green" href="{{ url_for('main.unit_exam_count',
+                            exam_paper_id=exam_finished.exam_paper_id, is_examinee=exam_finished.examinee_id) }}">
+                                查看排名
+                            </a>
+                        {% endif %}
+                    {% elif current_user.__tablename__ == 'correctors' and not unit_count %}
+                        {{ Examinee.query.filter_by(id=exam_finished.examinee_id).first().name }}
+                    {% elif unit_count %}
+                        &nbsp;
+                    {% else %}
+                        待定
+                    {% endif %}
+                </td>
+                <td>
+                    {{ Department.query.filter_by(id=
+                    (ExamPaper.query.filter_by(id=exam_finished.exam_paper_id).first()).department_id).first().name }}
+                </td>    {# 试卷所属课程 #}
+
+            {% if unit_count %}
+
+            {% else %}
+                <td>
+{#                    {{ (((ExamPaper.query.filter_by(id=exam_finished.exam_paper_id).first().end_time -#}
+{#                    ExamPaper.query.filter_by(id=exam_finished.exam_paper_id).first().start_time)) // 60 //1000).__int__()}}分#}
+{#                    {{ (((ExamPaper.query.filter_by(id=exam_finished.exam_paper_id).first().end_time -#}
+{#                    ExamPaper.query.filter_by(id=exam_finished.exam_paper_id).first().start_time)) % 60).__int__() }}秒#}
+                    {{ exam_finished.answer_time // 60 }}分&nbsp;{{ exam_finished.answer_time % 60 }}秒
+                </td>    {#  用时，{{  }}分{{  }}秒  #}
+
+                 {% if exam_finished.is_corrected %}
+                    <td>
+                        {{ (Score.query.filter_by(exam_paper_finish_id=exam_finished.id).first()).
+                            objective_score }}
+                    </td>
+                    <td>{% if (Score.query.filter_by(exam_paper_finish_id=exam_finished.id).first()).
+                            subjective_score %}
+                        {{ (Score.query.filter_by(exam_paper_finish_id=exam_finished.id).first()).
+                            subjective_score }}
+                        {% else %}
+                        无
+                        {% endif %}
+                    </td>
+                    <td>{% if (Score.query.filter_by(exam_paper_finish_id=exam_finished.id).first()).
+                            total_score %}
+                        {{ (Score.query.filter_by(exam_paper_finish_id=exam_finished.id).first()).
+                            total_score }}
+                        {% else %}
+                        无
+                        {% endif %}
+                    </td>
+                 {% else %}
+                     <td>待定</td>
+                     <td>待定</td>
+                     <td>待定</td>
+                 {% endif %}
+            {% endif %}
+                <td>
+                    {% if current_user.__tablename__ != 'examinees' and not is_corrected %}
+                        <a href="{{ url_for('main.correct_exam_paper', correct_examinee_id=exam_finished.examinee_id,
+                            correct_exam_paper_id=exam_finished.exam_paper_id) }}"
+                           class="btn btn-success" role="button">
+                            改卷
+                        </a>
+
+                        {{ exam_finished.exam_paper_id }}
+
+                    {% else %}
+                        &nbsp;
+                    {% endif %}
+                </td>
+
+            </tr>
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+
+            </tbody>
+
+        </table>
+
+        {% if pagination %}
+
+            <div class="pagination">
+                <div >
+                    <button style="width: 70px;height: 30px;" onclick="javascript: history.back()">返回</button>
+                </div>
+                {% if is_examinee %}
+                    {{ macros.pagination_widget(pagination, 'main.exam_finished_list', is_examinee=1) }}
+                {% elif is_corrected and unit_count %}
+                    {{ macros.pagination_widget(pagination, 'main.exam_finished_list', is_corrected=1, unit_count=1) }}
+                {% elif is_corrected %}
+                    {{ macros.pagination_widget(pagination, 'main.exam_finished_list', is_corrected=1) }}
+
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+    {% endblock %}
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+{% endblock %}
+
+{#{% if current_user.__tablename__ != 'examinees' %}#}
+{#{% block titlelink2 %}#}
+{#    {{ url_for('main.corrector') }}#}
+{#{% endblock %}#}
+{#{% endif %}#}

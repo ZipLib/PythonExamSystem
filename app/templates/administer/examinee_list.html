@@ -1,0 +1,129 @@
+{% extends "admin.html" %}
+{% import "_macros.html" as macros %}
+
+
+{% block content %}
+
+    <div class="col-md-10">
+        <table class="table table-striped">
+
+        {% block in_table_list %}
+            <caption>考生列表 &nbsp;
+                <a href="{{ url_for('administer.add_examinee') }}"><button>添加考生</button></a>&nbsp;
+                <a href="{{ url_for('administer.add_excel_examinee') }}"><button>导入考生</button></a>
+                <form action="{{ url_for('administer.examinee_list') }}" method="post" style="display: inline">
+
+                        <input class="search-examinee" name="search_examinee" type="text"
+                               placeholder="考生姓名或学号">
+
+                        <input class="search-examinee-submit" type="submit" value="查询考生">
+
+                </form>
+            </caption>
+            <thead>
+            <tr>
+                <th>名字</th>
+                <th>学号</th>
+                <th>出生日期</th>
+                <th>性别</th>
+                <th>身份证号</th>
+                <th>电话</th>
+{#                <th>邮箱</th>#}
+                <th>注册时间</th>
+                <th>登录次数</th>
+                <th>修改</th>
+                <th><div class="div2" style="float: left;">
+                        <button>批量删除</button>
+                    </div>
+                    <div class="div3" style="float:left;width:100px;position:absolute;
+                                            background: none;margin-left:60px">
+                        <ul>
+                            <li style="font-size: small" class="active">
+                                <a href="{{ url_for('administer.delete_examinee',
+                                    page=pagination.iter_pages(), delete_page=1) }}">
+                                    删除此页</a></li>
+                            <li style="font-size: small">
+                                <a href="{{ url_for('administer.delete_examinee', all=True) }}">
+                                    清空列表</a></li>
+                        </ul>
+                    </div>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for examinee in examinees %}
+            <tr>
+                <td>{{ examinee.name }}</td>
+                <td>{{ examinee.account }}</td>
+                <td>{{ examinee.birthday }}</td>
+                <td>
+                    {% if examinee.sex == 1 %}
+                        男
+                    {% elif examinee.sex == 2 %}
+                        女
+                    {% endif %}
+                </td>
+                <td>{{ examinee.id_card }}</td>
+                <td>{{ examinee.phone }}</td>
+{#                <td>{{ examinee.address}}</td>#}
+                <td>{{ examinee.timestamp }}</td>
+                <td>{{ examinee.login_times }}</td>
+                <td>
+                    <a href="{{ url_for("auth.information", user_id=examinee.id, user_type='examinee') }}"
+                       class="btn btn-warning" role="button" id="change_examinee">修改</a>
+                </td>
+                <td>
+                    <a href="javascript:delete_examinee({{examinee.id}})" class="btn btn-danger"
+                       role="button" id="delete_examinee">删除</a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        {% endblock %}
+        </table>
+
+        {% block macros_pagination %}
+        {% if pagination %}
+            <div class="pagination">
+                {{ macros.pagination_widget(pagination, 'administer.examinee_list') }}
+            </div>
+        {% endif %}
+        {% endblock %}
+
+    </div>
+
+
+{% endblock %}
+
+
+{% block script %}
+{{ super() }}
+    <script>
+
+        {% block js_function %}
+        function {% block function_delete_object %}delete_examinee(examinee_id){% endblock %}{
+            {% block function_delete_object_data %}
+            var data={"examinee_id": examinee_id}
+            {% endblock %}
+
+            $.ajax({
+                type: 'POST',
+
+                {% block function_delete_object_url %}
+                url: "{{ url_for('administer.delete_examinee') }}",
+                {% endblock %}
+
+                data: data,
+                dataType: 'json', // 注意：这里是指希望服务端返回json格式的数据
+                success: function(data) {
+                    window.location.reload()
+                },
+                error: function(xhr, type) {
+                    alert('something wrong')
+                }
+            });
+        }
+        {% endblock %}
+
+    </script>
+{% endblock %}

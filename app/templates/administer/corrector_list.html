@@ -1,0 +1,61 @@
+
+{% extends "administer/examinee_list.html" %}
+
+
+{% block in_table_list %}
+    <caption>改卷员列表</caption>
+    <thead>
+    <tr>
+        <th>名字</th>
+        <th>工号</th>
+        <th>身份证</th>
+        <th>修改</th>
+        <th>删除</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for corrector in correctors %}
+    <tr>
+        <td>{{ corrector.name }}</td>
+        <td>{{ corrector.account }}</td>
+        <td>{{ corrector.id_card }}</td>
+        <td>
+            <a href="{{ url_for("auth.information", user_id=corrector.id, user_type='corrector') }}"
+               class="btn btn-warning" role="button" id="change_examinee">修改</a>
+        </td>
+        <td>
+            <a href="javascript: delete_corrector({{corrector.id}})" class="btn btn-danger"
+               role="button" id="deletecorrector">删除</a>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+{% endblock %}
+
+{% block macros_pagination %}
+    {% if pagination %}
+        <div class="pagination">
+            {{ macros.pagination_widget(pagination, 'administer.corrector_list') }}
+        </div>
+    {% endif %}
+{% endblock %}
+
+
+{% block js_function %}
+    function delete_corrector(correctorid) {
+        var data={"correctorid": correctorid}
+
+        $.ajax({
+            type: 'POST',
+            url: "{{ url_for('administer.delete_corrector') }}",
+            data: data,
+            dataType: 'json',
+            success: function(data) {
+                window.location.reload()
+            },
+            error: function(xhr, type) {
+                alert('something wrong')
+            }
+        });
+    }
+{% endblock %}

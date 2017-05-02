@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}
+    用户
+{% endblock %}
+
+{% block account %}
+    {{ current_user.name }}
+    {% if current_user.__tablename__ == 'examinees' %}
+    (考生)
+    {% elif current_user.__tablename__ == 'questionMakers' %}
+    (出题员)
+    {% elif current_user.__tablename__ == 'correctors' %}
+    (改卷员)
+    {% else %}
+    (管理员)
+    {% endif %}
+{% endblock %}
+
+{% block style %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/exam.css') }}">
+    <style>
+        #quit{float: right;right: 5px;border: 1px solid;width: 20px;text-align: center;}
+    .quit{display: none}
+    </style>
+{% endblock %}
+
+
+{% block body %}
+{{ super() }}
+
+{% block body2 %}
+    <div class="row">
+        <div class="col-md-2">
+            <ul class="nav nav-pills nav-stacked" id="adminUL">
+                <div class="div2">
+                    <li>
+                        {% block li_list_head1 %}<a href="#">参加考试</a>{% endblock %}
+                    </li>
+                </div>
+                <div class="div3">
+                    <ul>
+                        <li class="active">
+                            {% block li_list_body1 %}<a href="{{ url_for('main.exam_self') }}">
+                                进入自考</a>{% endblock %}
+                        </li>
+                        <li class="active">
+                            {% block li_list_body2 %}<a href="{{ url_for('main.unit_exam') }}">
+                                参加统考</a>{% endblock %}
+                        </li>
+                        {% block li_list_body4 %}
+
+                         {% endblock %}
+                    </ul>
+                </div>
+
+                <div class="div2">
+                    <li>
+                        {% block li_list_body3 %}
+                            <a href="#">
+                            查看回答</a>
+                        {% endblock %}
+                    </li>
+                </div>
+                <div class="div3">
+                    <ul>
+                        <li class="active">
+                            <a href="{{ url_for('main.exam_paper_list', is_examinee=1) }}">
+                                我的自考</a>
+                        </li>
+                        <li class="active">
+                            <a href="{{ url_for('main.exam_finished_list', is_examinee=1) }}">
+                                完成答卷</a>
+                        </li>
+
+                    </ul>
+                </div>
+
+    {#            <div class="div2">#}
+    {#                <li>#}
+    {#                    <a href="{{ url_for('main.unit_exam_count', is_examinee=1) }}">#}
+    {#                        我的排名</a>#}
+    {#                </li>#}
+    {#            </div>#}
+
+                {% block div_li_list_head %}{% endblock %}
+            </ul>
+        </div>
+
+        {% block content %}
+            {% block hello %}
+                <div style="float: right;margin-right:40px;background: #4cae4c;width: 100px;height: 200px;position: absolute;right: 40px;">
+                    <div id="quit" >X</div><div style="margin-top: 10px;">考生你好！</div>
+                </div>
+            {% endblock %}
+            {% if current_user.__tablename__ == 'examinees' %}
+                <div style="position:relative;margin-left: 200px;margin-top: 450px;">
+                    <table style="margin-bottom: -30px;">
+                        <ul style="list-style: none">
+                            <li><td>友情链接：&nbsp;</td>
+                                {% for i in range(relation_links.__len__()) %}
+                                <td>&nbsp;</td>
+                                <td>
+                                    <a href="https://{{ relation_links[i].link_url }}">
+                                        {{ relation_links[i].link_name }}
+                                    </a>
+                                </td> &nbsp;&nbsp;&nbsp;
+                                {% endfor %}
+                            </li>
+                        </ul>
+                    </table>
+                </div>
+            {% endif %}
+        {% endblock %}
+    </div>
+    <br>
+{% endblock %}
+{% endblock %}
+
+{% block script %}
+<script>
+
+    $(".div2").click(function(){    // jquery
+        $(this).next("div").slideToggle("fast")
+            .siblings(".div3:visible").slideUp("fast");
+
+    });
+    $("#quit").click(function () {
+        $(this).parent().addClass("quit")    {# 全程有效，防刷新 （？） #}
+    })
+
+</script>
+{% endblock %}
+
+{#{% block titlelink1 %}#}
+{#{{ url_for('main.introduce') }}#}
+{#{% endblock %}#}
+{##}
+{#{% block titlelink2 %}#}
+{#{{ url_for('main.examinee') }}#}
+{#{% endblock %}#}

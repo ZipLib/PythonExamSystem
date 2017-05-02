@@ -1,0 +1,27 @@
+
+.page-header{
+    background: url('../pic/cat.jpg') no-repeat ;
+    width: 300px;
+    background-position:20% 20%;              /*图片上下左右居中*/
+    background-size: cover;
+
+}
+.loginHtml, .row, .page-header{
+    margin: 0 auto;
+    /*border: 3px solid #abc*/
+}
+h2{
+    text-align:left;
+    padding-top: 10px;
+    padding-left: 10px;
+}
+
+.row{
+    width:300px;
+    height: 300px;
+    padding-top: 30px;
+    /*background-color: #5cb85c;*/
+}
+[type='submit']{
+
+}

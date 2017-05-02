@@ -1,0 +1,185 @@
+{% extends "examinee.html" %}
+{% import "_macros.html" as macros %}
+
+{% block style %}
+{{ super() }}
+<style>
+
+</style>
+{% endblock %}
+
+{% block body %}
+
+
+    {% block content %}
+
+    <div class="col-md-10">
+        <table class="table table-striped">
+            <caption>
+                答卷详情:  &nbsp;<b>{{ exam_paper_name }}</b>&nbsp;&nbsp;
+                <button onclick=show_true()>查看全部</button>
+                <button onclick=hide_true()>
+                    只看错题</button>
+
+            </caption>
+            <thead>
+            <tr>
+                <th>题型</th>
+                <th>题号</th>
+                <th>题目</th>
+                <th>答案</th>
+                <th>回答</th>
+                <th>分数</th>
+                <th>回答情况</th>
+                <th></th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% if singles %}
+            {% for single in singles %}
+            <tr>
+                <td>{{ single.question_type }}</td>
+                <td>
+                    <script>
+                        document.write('第' + ({{ singles.index(single) }} + 1) + '题');
+                    </script>
+                </td>
+                <td>{{ SingleQuestion.query.filter_by(id=single.question_id).first().question }}</td>
+                <td> {{ single.answer }} </td>
+                <td>{{ single.answered_content }} </td>
+                <td>{{ single.per_score }}</td>
+                <td>{% if single.answer == single.answered_content %}
+{#                        <span style="color: green;">正确</span>#}
+                        <img name="true" src="{{ url_for('static', filename='pic/true.png') }}">
+                    {% else %}
+{#                        <span style="color: red;">错误</span>#}
+                        <img name="error" src="{{ url_for('static', filename='pic/error.png') }}">
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+            {% if multis %}
+            {% for multi in multis %}
+            <tr>
+                <td>{{ multi.question_type }}</td>
+                <td>
+                    <script>
+                        document.write('第' + ({{ multis.index(multi) }} + 1) + '题');
+                    </script>
+                </td>
+                <td>{{ MultiQuestion.query.filter_by(id=multi.question_id).first().question }}</td>
+                <td> {{ multi.answer }} </td>
+                <td>{{ multi.answered_content }} </td>
+                <td>{{ multi.per_score }}</td>
+                <td>{% if multi.answer == multi.answered_content %}
+{#                        <span style="color: green;">正确</span>#}
+                        <img name="true" src="{{ url_for('static', filename='pic/true.png') }}">
+                    {% else %}
+{#                        <span style="color: red;">错误</span>#}
+                        <img name="error" src="{{ url_for('static', filename='pic/error.png') }}">
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+            {% if judges %}
+            {% for judge in judges %}
+            <tr>
+                <td>{{ judge.question_type }}</td>
+                <td>
+                    <script>
+                        document.write('第' + ({{ judges.index(judge) }} + 1) + '题');
+                    </script>
+                </td>
+                <td>{{ JudgeQuestion.query.filter_by(id=judge.question_id).first().question }}</td>
+                <td> {{ judge.answer }} </td>
+                <td>{{ judge.answered_content }} </td>
+                <td>{{ judge.per_score }}</td>
+                <td>{% if judge.answer == judge.answered_content %}
+{#                        <span style="color: green;">正确</span>#}
+                        <img name="true" src="{{ url_for('static', filename='pic/true.png') }}">
+                    {% else %}
+{#                        <span style="color: red;">错误</span>#}
+                        <img name="error" src="{{ url_for('static', filename='pic/error.png') }}">
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+            {% if fills %}
+            {% for fill in fills %}
+            <tr>
+                <td>{{ fill.question_type }}</td>
+                <td>
+                    <script>
+                        document.write('第' + ({{ fills.index(fill) }} + 1) + '题');
+                    </script>
+                </td>
+                <td>{{ FillQuestion.query.filter_by(id=fill.question_id).first().question }}</td>
+                <td> {{ fill.answer }} </td>
+                <td>{{ fill.answered_content }} </td>
+                <td>{{ fill.per_score }}</td>
+                <td>{% if fill.answer == fill.answered_content %}
+{#                        <span style="color: green;">正确</span>#}
+                        <img name="true" src="{{ url_for('static', filename='pic/true.png') }}">
+                    {% else %}
+{#                        <span style="color: red;">错误</span>#}
+                        <img name="error" src="{{ url_for('static', filename='pic/error.png') }}">
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+            {% if answers %}
+            {% for answer in answers %}
+            <tr>
+                <td>{{ answer.question_type }}</td>
+                <td>
+                    <script>
+                        document.write('第' + ({{ answers.index(answer) }} + 1) + '题');
+                    </script>
+                </td>
+                <td>{{ AnswerQuestion.query.filter_by(id=answer.question_id).first().question }}</td>
+                <td> {{ answer.answer }} </td>
+                <td>{{ answer.answered_content }} </td>
+                <td>{{ answer.per_score }}</td>
+                <td>&nbsp;</td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+            </tbody>
+        </table>
+    <button style="height: 30px;width: 720px;color: green;" onclick="history.back()">回到列表</button>
+    <br><br>
+
+{#        {% if pagination %}#}
+{#            <div class="pagination">#}
+{#                {{ macros.pagination_widget(pagination, 'main.exam_finished_list') }}#}
+{#            </div>#}
+{#        {% endif %}#}
+    </div>
+
+    {% endblock %}
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+    <script>
+    function hide_true() {
+        var true_td;
+        true_td = document.getElementsByName('true');
+        for(var i=0; i<true_td.length; i++){
+            true_td[i].parentNode.parentNode.style.display='none'
+        }
+    }
+    function show_true() {
+        var true_td;
+        true_td = document.getElementsByName('true');
+        for(var i=0; i<true_td.length; i++){
+            true_td[i].parentNode.parentNode.style.display=''
+        }
+    }
+    </script>
+{% endblock %}

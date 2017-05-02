@@ -1,0 +1,22 @@
+Metadata-Version: 1.1
+Name: flask-sqlalchemy-rls
+Version: 0.0.2
+Summary: Flask-SQLAlchemy with row-level security
+Home-page: https://github.com/flow180/flask-sqlalchemy-rls
+Author: Charlie Wolf
+Author-email: charlie@flow180.com
+License: MIT+Tequilaware
+Description: Flask-SQLAlchemy-RLS
+        ======
+        
+        This is a flask plugin that extends Flask-SQLAlchemy with PostgreSQL 9.5 `row-level security <http://www.postgresql.org/docs/9.5/static/ddl-rowsecurity.html>`_ support.
+        
+        Please see the examples for more information on how to use.
+        
+        
+Keywords: row level security
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 2
+Classifier: Topic :: Utilities

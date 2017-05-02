@@ -1,0 +1,62 @@
+{% extends "question_maker.html" %}
+
+{% block title %}
+    改卷员
+{% endblock %}
+
+{% block titlelink2 %}
+    {{ url_for('main.corrector') }}
+{% endblock %}
+
+{% block li_list_head1 %}<a href="#">改卷</a>{% endblock %}
+
+{% block li_list_body1 %}<a href="{{ url_for('main.exam_finished_list') }}">未改试卷</a>{% endblock %}
+{% block li_list_body2 %}<a href="{{ url_for('main.exam_finished_list', is_corrected=1) }}">已改试卷</a>{% endblock %}
+{% block li_list_body4 %}{% endblock %}
+
+{% block div_li_list_head %}
+    <div class="div2">
+        <li><a href="#">统考统计</a></li>
+    </div>
+    <div class="div3">
+                <ul>
+                    <li class="active">
+                        <a href="{{ url_for('main.exam_finished_list', is_corrected=1, unit_count=1) }}">
+                            考生分数</a>
+                    </li>
+{#                    <li class="active">#}
+{#                        <a href="{{ url_for('main.exam_finished_list', is_corrected=1, unit_count=1) }}">#}
+{#                            考情统计</a>    {# 指定试卷查看（实现便利） #}
+{#                    </li>#}
+
+                </ul>
+            </div>
+{% endblock %}
+
+{% block quick_add %}
+    <div class="col-md-2" style="width: 70%;height:300px ">
+        <a href="{{ url_for('main.exam_finished_list') }}">
+            <div id="quick-nav1">
+                <span>答卷改卷</span>
+            </div>
+        </a>
+        <a href="{{ url_for('main.exam_finished_list', is_corrected=1) }}">
+            <div id="quick-nav2">
+                <span>查看改卷</span>
+            </div>
+        </a>
+    </div>
+    {% endblock %}
+
+{% block script %}
+<script>
+    // jQuery
+    $(".div2").click(function(){
+        $(this).next("div").slideToggle("fast");
+    });
+
+</script>
+{% endblock %}
+
+
+

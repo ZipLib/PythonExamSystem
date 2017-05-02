@@ -1,0 +1,49 @@
+{% extends "question_maker.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block style %}
+    {{ super() }}
+    <style>
+        #head{border:0px; margin:0px;}
+        .control-label,.form-control,#difficulty{display: inline;}    {# label和input一行 ...？ #}
+    </style>
+{% endblock %}
+
+{% block body %}
+{{ super() }}
+{% endblock %}
+
+
+{% block content %}
+    <div class="col-md-10">
+       <div class="my-content-nav">
+            <ul>
+                <li><a href="{{ url_for('main.add_question', question_type='单选题') }}">
+                    <button class="my-buttons" onclick="button_click(this)">
+                    单选题</button></a> </li>
+                <li><a href="{{ url_for('main.add_question', question_type='多选题') }}">
+                    <button onclick="button_click(this)">
+                    多选题</button></a></li>
+                <li><a href="{{ url_for('main.add_question', question_type='判断题') }}">
+                    <button onclick="button_click(this)">
+                    判断题</button></a></li>
+                <li><a href="{{ url_for('main.add_question', question_type='填空题') }}">
+                    <button onclick="button_click(this)">
+                    填空题</button></a></li>
+                <li><a href="{{ url_for('main.add_question', question_type='问答题') }}">
+                    <button onclick="button_click(this)">
+                    问答题</button></a></li>
+            </ul>
+    </div>
+    <div class="col-md-6" id="questioncontent">
+        <div class="page-header" id="head">
+            <h3>添加{{ question_type }}</h3>
+         </div>
+        {{ wtf.quick_form(form) }}
+    </div>
+
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+{% endblock %}

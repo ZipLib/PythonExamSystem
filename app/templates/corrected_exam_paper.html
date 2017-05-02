@@ -1,0 +1,84 @@
+{% extends "corrector.html" %}
+{% import "_macros.html" as macros %}
+
+{% block style %}
+{{ super() }}
+    <style>
+        table{}
+        th{width: 120px;text-align: right;}
+    </style>
+{% endblock %}
+
+{% block body %}
+{% block content %}
+    <div class="col-md-10">
+    <form action="{{ url_for('main.correct_exam_paper') }}" type="" method="post" >
+        <table class="table table-striped">
+            <caption>
+                改卷详情<br>
+                <b>
+                    {{ exam_paper_finish.get_exam_paper().exam_paper_name }}
+                </b><br>
+                主观问答题
+            </caption>
+            <thead>
+            <tr>
+                <td width="50px">题序</td>
+                <td>问题</td>
+                <td>参考答案</td>
+                <td width="150px">回答</td>
+                <td width="100px">我的批示</td>
+                <td width="100px">我的给分</td>
+            </tr>
+            </thead>
+
+        {% block tbody %}
+            <tbody>
+            {% if pagination %}
+            {% for exam_finished_detail in exam_finished_details %}
+                {% if exam_paper_finish.is_corrected  %}    {# 已改答卷 #}
+
+                <tr>
+                    <td>
+                        <script>
+                            document.write({{ exam_finished_details.index(exam_finished_detail) }} + 1);
+                        </script>
+                    </td>
+                    <td>
+                        {{ AnswerQuestion.query.filter_by(id=exam_finished_detail.question_id).first().question }}
+                    </td>
+                    <td>
+                        {{ exam_finished_detail.answer }}
+                    </td>
+                    <td>
+                        {{ exam_finished_detail.answered_content }}
+                    </td>
+                    <td>
+                        {{ (ExamPaperCorrected.query.filter_by(exam_paper_finished_id=exam_paper_finish.id)
+                        .all())[exam_finished_details.index(exam_finished_detail)].corrected_content }}
+                    </td>
+                    <td>
+                        {{ (ExamPaperCorrected.query.filter_by(exam_paper_finished_id=exam_paper_finish.id)
+                        .all())[exam_finished_details.index(exam_finished_detail)].corrected_score }}
+                    </td>
+                </tr>
+                {% endif %}
+            {% endfor %}
+            {% endif %}
+            </tbody>
+        {% endblock %}
+
+        </table>
+    </form>
+        {% if pagination %}
+            <div class="pagination">
+                <div >
+                    <button style="width: 70px;height: 30px;" onclick="javascript: history.back()">返回</button>
+                </div>
+                {{ macros.pagination_widget(pagination, 'main.corrected_exam_paper') }}
+            </div>
+        {% endif %}
+
+    </div>
+{% endblock %}
+{% endblock %}

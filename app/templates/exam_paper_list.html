@@ -1,0 +1,186 @@
+{% extends "question_maker.html" %}
+{% import "_macros.html" as macros %}
+
+{% block style %}
+{{ super() }}
+<style>
+
+</style>
+{% endblock %}
+
+{% block body %}
+{{ super() }}
+{% endblock %}
+
+{% if is_examinee %}
+    {% block li_list_head1 %}{% endblock %}
+    {% block li_list_body1 %}{% endblock %}
+    {% block li_list_body2 %}{% endblock %}
+    {% block li_list_body3 %}{% endblock %}
+    {% block div_li_list_head %}{% endblock %}
+{% endif %}
+
+{% block titlelink2 %}
+    {% if current_user.__tablename__ == 'examinees' %}
+        {{ url_for('main.examinee') }}
+    {% elif current_user.__tablename__ == 'questionMakers' %}
+        {{ url_for('main.question_maker') }}
+    {% elif current_user.__tablename__ == 'correctors' %}
+        {{ url_for('main.corrector') }}
+    {% elif current_user.__tablename__ == 'admins' %}
+        {{ url_for('administer.admin') }}
+    {% endif %}
+{% endblock %}
+{% block content %}
+
+    <div class="">
+        <table class="table table-striped">
+            <caption>试卷列表</caption>
+            <thead>
+            <tr>
+                <th>试卷名</th>
+                <th>总分</th>
+                <th>考试时间</th>
+                <th>试卷状态</th>
+
+                <th>课程</th>
+                <th>生成日期</th>
+            {% if not is_examinee %}
+                <th>出题员</th>
+                <th>考生出卷</th>
+                <th>&nbsp;</th>
+            {% endif %}
+                <th><div class="div2" style="float: left;">
+                        <button style="width: 80px;">批量删除</button>
+                    </div>
+                    <div class="div3" style="float:left;width:100px;position:absolute;
+                                            background: none;margin-left:60px">
+                        <ul>
+                            <li style="font-size: small" class="active">
+                                <a href="{{ url_for('main.delete_exam',
+                                    page=pagination.iter_pages()) }}">
+                                    删除此页</a></li>
+                            <li style="font-size: small">
+                                <a href="{{ url_for('main.delete_exam', all=True) }}">
+                                    清空库表</a></li>
+                        </ul>
+                    </div>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for exam in exam_papers %}
+                {% if current_user.__tablename__ == 'questionMakers' %}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('main.exam_paper_detail', exam_name=exam.exam_paper_name) }}">
+                                {{ exam.exam_paper_name }}
+                            </a>
+                        </td>
+                        <td>{{ exam.total_score }}</td>
+                        <td>{{ exam.answer_time_set }}</td>
+                        <td>{{ exam.status }}</td>
+
+                        <td>{{ Department.query.filter_by(id=exam.department_id).first().name }}</td>
+                        <td>{{ exam.timestamp }}</td>
+                        <td>{{ QuestionMaker.query.filter_by(id=exam.question_maker_id).first().name }}</td>
+                        <td>{{ exam.is_examinees }}</td>    {# DNF   line below #}
+                        <td><a href="{{ url_for('main.examination', exam_title=exam.exam_paper_name, question_type=(1,)) }}">
+                            卷面</a></td>  {# DNF  question_type属性：+ 12345 #}
+                        <td><button onclick="delete_exam({{ exam.id }}, '0')"
+                                    class="btn btn-danger">删除</button></td>
+                    </tr>
+                {% elif exam.is_examinees and is_examinee %}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('main.exam_paper_detail', exam_name=exam.exam_paper_name) }}">
+                                {{ exam.exam_paper_name }}
+                            </a>
+                        </td>
+                        <td>{{ exam.total_score }}</td>
+                        <td>{{ exam.answer_time_set }}</td>
+                        <td>{{ exam.status }}</td>
+
+                        <td>{{ Department.query.filter_by(id=exam.department_id).first().name }}</td>
+                        <td>{{ exam.timestamp }}</td>
+{#                        <td>{{ exam.question_maker_id.name }}</td>#}
+{#                        <td>{{ exam.is_examinees }}</td> #}
+                        <td><a href="{{ url_for('main.examination', exam_title=exam.exam_paper_name, question_type=(1,)) }}">
+                            卷面</a></td>  {# DNF  question_type属性：+ 12345 #}
+                        <td><button onclick="delete_exam({{ exam.id }}, '0')"
+                                    class="btn btn-danger">删除</button></td>
+                    </tr>
+                {% else %}
+                    <tr></tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {% if pagination %}
+            <div class="pagination">
+                {{ macros.pagination_widget(pagination, 'main.exam_paper_list') }}
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+    <script>
+{# Stay here. 集成js包调用404 #}
+        function delete_exam(exam_id, delete_type) {
+            $.ajax({
+                type: 'POST',
+                url: "{{ url_for('main.delete_exam') }}",
+                data: {
+                    exam_id: exam_id,
+                    delete_type: delete_type
+                },
+                dataType: 'json',
+                success: function (data) {
+                    window.location.reload()
+                },
+                error: function (xhr, type) {
+                    alert('delete exam error type: '
+                        +type+'---- status:'+xhr.status+'---- readyState:'+xhr.readyState
+                        +'---- responseText: '+xhr.responseText)
+                }
+            });
+        };
+
+        {# test get attributes. #}
+        $(document).ready(function () {
+            $('button#qt').click(function () {
+                alert('button #qt is : ' + $(this).attr("onclick"));
+            });
+        });
+        {# test get attributes. #}
+        function question_type_test(qt, question_type) {
+
+            alert(qt + 'current question dataType is : '+ question_type)
+
+        };
+
+
+{#        function choose_question(question_type) {#}
+{##}
+{#            $.ajax({#}
+{#                type: 'POST',#}
+{#                url: "{{ url_for('main.question_list')}}",#}
+{#                data: JSON.stringify({"question_type": question_type}),#}
+{#                dataType: 'json',    # 此处要求URL响应的数据类型一致#}
+{#                async:false,#}
+{#                success: function(data) {#}
+{#                    window.location.reload()#}
+{#                },#}
+{#                error: function(xhr, type) {#}
+{#                    alert('choose question error type: '#}
+{#                        +type+'status:'+xhr.status+'readystate'+xhr.readyState#}
+{#                        +'responseText: '+xhr.responseText)#}
+{#                }#}
+{#            });#}
+{#        }#}
+    </script>
+{% endblock %}

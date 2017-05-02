@@ -1,0 +1,14 @@
+{% extends "question_maker.html" %}
+{#{% import "administer/add_examinee.html" as add_exam %}#}
+{% block content %}
+{#{{ add_exam.content }}#}
+    <div class="col-md-6">
+        <div class="page-header" id="page-head">
+            {% block content_title %}
+                <h3>Excel表导入题库</h3>
+            {% endblock %}
+         </div>
+        {{ wtf.quick_form(form) }}
+    </div>
+
+{% endblock %}

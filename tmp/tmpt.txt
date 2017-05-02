@@ -1,0 +1,57 @@
+# 试卷详情 关系表    # 试卷与其他关系的 多对多
+examPaper_examinee = db.Table('examPaper_examinee',
+                              db.Column('exam_paper_id', db.Integer, db.ForeignKey('examPapers.id')),
+                              db.Column('examinee_id', db.Integer, db.ForeignKey('examinees.id'))
+                              )
+examPaper_singleQuestion = db.Table('examPaper_singleQuestion',
+                                    db.Column('exam_paper_id', db.Integer, db.ForeignKey('examPapers.id')),
+                                    db.Column('single_question_id', db.Integer, db.ForeignKey('singleQuestions.id'))
+                                    )
+examPaper_multiQuestion = db.Table('examPaper_multiQuestion',
+                                    db.Column('exam_paper_id', db.Integer, db.ForeignKey('examPapers.id')),
+                                    db.Column('multi_question_id', db.Integer, db.ForeignKey('multiQuestions.id'))
+                                    )
+examPaper_judgeQuestion = db.Table('examPaper_judgeQuestion',
+                                    db.Column('exam_paper_id', db.Integer, db.ForeignKey('examPapers.id')),
+                                    db.Column('judge_question_id', db.Integer, db.ForeignKey('judgeQuestions.id'))
+                                    )
+examPaper_fillQuestion = db.Table('examPaper_fillQuestion',
+                                    db.Column('exam_paper_id', db.Integer, db.ForeignKey('examPapers.id')),
+                                    db.Column('fill_question_id', db.Integer, db.ForeignKey('fillQuestions.id'))
+                                    )
+examPaper_answerQuestion = db.Table('examPaper_answerQuestion',
+                                    db.Column('exam_paper_id', db.Integer, db.ForeignKey('examPapers.id')),
+                                    db.Column('answer_question_id', db.Integer, db.ForeignKey('answerQuestions.id'))
+                                    )
+
+
+# 试卷 表
+class ExamPaper(db.Model):
+    __tablename__ = 'examPapers'
+    id = db.Column(db.Integer, primary_key=True)
+    exam_paper_name = db.Column(db.String(64))
+    question_type = db.Column(db.String(64))
+    question_number = db.Column(db.Integer)
+    timestamp = db.Column(db.DateTime(), default=datetime.utcnow)
+    answer_time_set = db.Column(db.String(64))    # v2
+    question_maker_id = db.Column(db.Integer, db.ForeignKey('questionMakers.id'))
+
+    examinees = db.relationship('Examinee', secondary=examPaper_examinee,  # v2    试卷与考生表 多对多
+                                  backref=db.backref('examPapers', lazy='dynamic'),
+                                  lazy='dynamic')
+    single_questions = db.relationship('SingleQuestion', secondary=examPaper_singleQuestion,    # 试卷与单选题表 多对多
+                                       backref=db.backref('examPapers', lazy='dynamic'),
+                                       lazy='dynamic')
+    multi_questions = db.relationship('MultiQuestion', secondary=examPaper_multiQuestion,    # 试卷与多选题表 多对多
+                                      backref=db.backref('examPapers', lazy='dynamic'),
+                                      lazy='dynamic')
+    judge_questions = db.relationship('JudgeQuestion', secondary=examPaper_judgeQuestion,    # 试卷与判断题表 多对多
+                                      backref=db.backref('examPapers', lazy='dynamic'),
+                                      lazy='dynamic')
+    fill_questions = db.relationship('FillQuestion', secondary=examPaper_fillQuestion,    # 试卷与填空题表 多对多
+                                     backref=db.backref('examPapers', lazy='dynamic'),
+                                     lazy='dynamic')
+    answer_questions = db.relationship('AnswerQuestion', secondary=examPaper_answerQuestion,    # 试卷与问答题表 多对多
+
+                                       backref=db.backref('examPapers', lazy='dynamic'),
+                                       lazy='dynamic')

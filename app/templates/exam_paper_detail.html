@@ -1,0 +1,185 @@
+{% extends "question_maker.html" %}
+{#{% import "_macros.html" as macros %}#}
+
+{% if current_user.__tablename__ == 'examinees' %}
+{#    {% block titlelink2 %}#}
+{#        {{ url_for('main.examinee') }}#}
+{#    {% endblock %}#}
+    {% block li_list_head1 %}{% endblock %}
+    {% block li_list_body1 %}{% endblock %}
+    {% block li_list_body2 %}{% endblock %}
+    {% block li_list_body3 %}{% endblock %}
+    {% block div_li_list_head %}{% endblock %}
+{% endif %}
+
+{% block content %}
+
+    <div class="" >
+        <table class="table table-striped">
+            <caption><b>试卷详情：{{ exam_name }}</b></caption>
+            <thead>
+            <tr>
+                <th>题型</th>
+                <th>题目</th>
+                <th>分数</th>
+                <th>难度</th>
+                <th>状态</th>
+
+                <th>选项1</th>
+                <th>选项2</th>
+                <th>选项3</th>
+                <th>选项4</th>
+
+                <th>答案</th>
+                <th>日期</th>
+                <th>考生出题</th>  {#  1 <- DNF 2...通知 课室等 定时统考 主观改卷 分数 查询！...#}
+                <th>
+{#                    <div class="div2" style="float: left;">#}
+{#                        <button>删除</button>#}
+{#                    </div>#}
+{#                    <div class="div3" style="float:left;width:100px;position:absolute;#}
+{#                                            background: none;margin-left:60px">#}
+{#                        <ul>#}
+{#                            <li style="font-size: small" class="active">#}
+{#                                <a href="{{ url_for('main.delete_single_question',#}
+{#                                    page=pagination.iter_pages()) }}">#}
+{#                                    删除此页</a></li>#}
+{#                            <li style="font-size: small">#}
+{#                                <a href="{{ url_for('main.delete_single_question', all=True) }}">#}
+{#                                    清空库表</a></li>#}
+{#                        </ul>#}
+{#                    </div>#}
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            {% if single_questions %}
+            {% for single_question in single_questions %}
+            <tr>
+                <td>单选</td>
+                <td style="max-width: 100px;height: 70px;
+                display: -moz-box;-moz-box-orient: vertical;-moz-line-clamp: 3;overflow: hidden;">
+                    {{ single_question.question }}
+                </td>
+                <td>{{ single_question.score }}</td>
+                <td>{{ single_question.difficulty }}</td>
+                <td>{{ single_question.status }}</td>
+
+                <td>{{ single_question.option1 }}</td>
+                <td>{{ single_question.option2 }}</td>
+                <td>{{ single_question.option3 }}</td>
+                <td>{{ single_question.option4 }}</td>
+                <td>{{ single_question.answer }}</td>
+
+                <td>{{ single_question.timestamp }}</td>
+                <td>{{ single_question.is_examinee }}</td>
+{#                <td><button onclick="delete_question({{ single_question.id }}, '0')"#}
+{#                            class="btn btn-danger">删除</button></td>    题目不合适就删了试卷重做呗#}
+            </tr>
+            {% endfor %}
+            {% endif %}
+            {% if multi_questions %}
+            {% for multi_question in multi_questions %}
+            <tr>
+                <td>多选</td>
+                <td style="max-width: 100px;height: 70px;
+                display: -moz-box;-moz-box-orient: vertical;-moz-line-clamp: 3;overflow: hidden;">
+                    {{ multi_question.question }}
+                </td>
+                <td>{{ multi_question.score }}</td>
+                <td>{{ multi_question.difficulty }}</td>
+                <td>{{ multi_question.status }}</td>
+                <td>{{ multi_question.option1 }}</td>
+                <td>{{ multi_question.option2 }}</td>
+                <td>{{ multi_question.option3 }}</td>
+                <td>{{ multi_question.option4 }}</td>
+                <td>{{ multi_question.answer }}</td>
+                <td>{{ multi_question.timestamp }}</td>
+                <td>{{ multi_question.is_examinee }}</td>
+
+            </tr>
+            {% endfor %}
+            {% endif %}{% if judge_questions %}
+            {% for judge_question in judge_questions %}
+            <tr>
+                <td>判断</td>
+                <td style="max-width: 100px;height: 70px;
+                display: -moz-box;-moz-box-orient: vertical;-moz-line-clamp: 3;overflow: hidden;">
+                    {{ judge_question.question }}
+                </td>
+                <td>{{ judge_question.score }}</td>
+                <td>{{ judge_question.difficulty }}</td>
+                <td>{{ judge_question.status }}</td>
+                <td>{{ judge_question.option1 }}</td>
+                <td>{{ judge_question.option2 }}</td>
+                <td>&nbsp;&nbsp;</td>
+                <td>&nbsp;&nbsp;</td>
+                <td>{{ judge_question.answer }}</td>
+                <td>{{ judge_question.timestamp }}</td>
+                <td>{{ judge_question.is_examinee }}</td>
+
+            </tr>
+            {% endfor %}
+            {% endif %}{% if fill_questions %}
+            {% for fill_question in fill_questions %}
+            <tr>
+                <td>填空</td>
+                <td style="max-width: 100px;height: 70px;
+                display: -moz-box;-moz-box-orient: vertical;-moz-line-clamp: 3;overflow: hidden;">
+                    {{ fill_question.question }}
+                </td>
+                <td>{{ fill_question.score }}</td>
+                <td>{{ fill_question.difficulty }}</td>
+                <td>{{ fill_question.status }}</td>
+                <td>{{ fill_question.option1 }}</td>
+                <td>{{ fill_question.option2 }}</td>
+                <td>{{ fill_question.option3 }}</td>
+                <td>{{ fill_question.option4 }}</td>
+{#                <td>{{ fill_question.option5 }}</td>#}
+{#                <td>{{ fill_question.option6 }}</td>#}
+                <td>{{ fill_question.answer }}</td>
+                <td>{{ fill_question.timestamp }}</td>
+                <td>{{ fill_question.is_examinee }}</td>
+
+            </tr>
+            {% endfor %}
+            {% endif %}{% if answer_questions %}
+            {% for answer_question in answer_questions %}
+            <tr>
+                <td>问答</td>
+                <td style="max-width: 100px;height: 70px;
+                display: -moz-box;-moz-box-orient: vertical;-moz-line-clamp: 3;overflow: hidden;">
+                    {{ answer_question.question }}
+                </td>
+                <td>{{ answer_question.score }}</td>
+                <td>{{ answer_question.difficulty }}</td>
+                <td>{{ answer_question.status }}</td>
+                <td>&nbsp;&nbsp;</td>
+                <td>&nbsp;&nbsp;</td>
+                <td>&nbsp;&nbsp;</td>
+                <td>&nbsp;&nbsp;</td>
+                <td>{{ answer_question.answer }}</td>
+                <td>{{ answer_question.timestamp }}</td>
+                <td>{{ answer_question.is_examinee }}</td>
+
+            </tr>
+            {% endfor %}
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+{#        {% if pagination %}#}
+{#            <div class="pagination">#}
+{#                {{ macros.pagination_widget(pagination, 'main.single_question_paper_list') }}#}
+{#            </div>#}
+{#        {% endif %}#}
+{#    </div>#}
+ {# 一行超出省略号： text-overflow: ellipsis;white-space:nowrap;overflow:hidden;#}
+
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+    <script></script>
+{% endblock %}

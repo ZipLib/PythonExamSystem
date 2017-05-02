@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block style %}
+{{ super() }}
+    <style>
+    table tr td{
+{#        border: 2px solid #4cae4c;#}
+{#        width: 30%;#}
+    }
+    tr{
+        word-spacing:30px;
+        line-height:30px;
+    }
+    tr td:first-child{
+        text-align: right;
+    }
+    </style>
+{% endblock %}
+
+{% block title %}
+个人信息
+{% endblock %}
+
+{% block account %}
+    {{ current_user.name }}
+    {% if current_user.__tablename__ == 'examinees' %}
+    (考生)
+    {% elif current_user.__tablename__ == 'questionMakers' %}
+    (出题员)
+    {% elif current_user.__tablename__ == 'correctors' %}
+    (改卷员)
+    {% else %}
+    (管理员)
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+<div class="row">
+        <div class="page-header">
+            {% block content %}
+                <h1>{{ user.name }}的资料</h1>
+                <div>
+                {% if change_information %}
+                    {{ wtf.quick_form(form) }}
+                {% else %}
+{#                <form action="" method="post" class="form" role="form">#}
+                    <table>
+                        <tr>
+                            <td>账号 ：</td>
+                            <td id="td_account">{{ user.account }}</td>
+                            <td>
+                                {% if current_user.__tablename__ == 'admins' and user.__tablename__ != 'admins' %}
+                                    <button id="change_account"
+                                            onclick="change_information('td_account', 'account')"
+                                            value="">修改</button>
+                                    <span style="display: none"> 点击空白处完成修改。</span></td>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>密码 ：</td>
+                            <td id="td_password" name="aaa">******</td>
+                            <td id="bbb">
+                                {% if current_user.__tablename__ == 'admins' and user.__tablename__ != 'admins' %}
+{#                                    {% if  %}#}
+                                    <button id="change_password"
+                                            onclick="change_information('td_password', 'password')"
+                                            value="">修改</button>
+                                    <span style="display: none"> 点击空白处完成修改。</span></td>  {# ajax 修改资料 #}
+{#                                    {% endif %}    #}
+                                {% else %}
+                                    <a href="{{ url_for('auth.change_password', from_information=1) }}">
+                                        <button>修改</button></a>
+                                {% endif %}
+                        </tr>
+
+                        <tr>
+                            <td>姓名 ：</td>
+                            <td id="td_name">{{ user.name }}</td>
+                            <td>
+                                {% if current_user.__tablename__ == 'admins' and user.__tablename__ != 'admins' %}
+                                <button id="change_name" onclick="change_information('td_name', 'name')" >
+                                修改</button><span style="display: none"> 点击空白处完成修改。</span></td>
+                                {% endif %}
+                        </tr>
+
+                        <tr>
+                            <td>性别 ：</td>
+                            <td id="td_sex">
+                                {% if user.sex == 1%}
+                                    男
+                                {% elif user.sex == 2 %}
+                                    女
+                                {% endif %}
+                            </td>
+                            <td><button id="change_sex" onclick="change_information('td_sex', 'sex')" >
+                                修改</button><span style="display: none"> 男1女2，点击空白处完成修改。</span></td>
+                        </tr>
+                        <tr>
+                            <td>电话 ：</td>
+                            <td id="td_phone">{{ user.phone }}</td>
+                            <td><button id="change_phone" onclick="change_information('td_phone','phone')" >
+                                修改</button><span style="display: none;"> 点击空白处完成修改。</span></td>
+                        </tr>
+                        <tr>
+                            <td>身份证 ：</td>
+                            <td id="td_id_card">{{ user.id_card }}</td>
+                            <td>
+                                {% if current_user.__tablename__ == 'admins' %}
+                                    <button id="change_id_card" onclick="change_information('td_id_card', 'id_card')" >
+                                    修改</button><span style="display: none"> 点击空白处完成修改。</span></td>
+                                {% endif %}
+                        </tr>
+                        <tr>
+                            <td>出生日期 ：</td>
+                            <td id="td_birthday">{{ user.birthday }}</td>
+                            <td><button id="change_birthday" onclick="change_information('td_birthday', 'birthday')" >
+                                修改</button><span style="display: none">格式：xxx-xx-xx, 点击空白处完成修改。</span></td>
+                        </tr>
+                        <tr>
+                            <td>邮箱地址 ：</td>
+                            <td id="td_address">{{ user.address }}</td>
+                            <td><button id="change_address" onclick="change_information('td_address', 'address')"
+                                     >修改</button><span style="display: none"> 点击空白处完成修改。</span></td>
+                        </tr>
+                        <tr>
+
+                            <td>用户状态 ：</td>
+                            <td id="td_status">{% if user.status == 1 %}可用{% else %}不可用{% endif %}</td>
+                            <td>
+                            {% if current_user.__tablename__ == 'admins' %}
+                                <button id="change_status" onclick="change_information('td_status', 'status')" >
+                                修改</button><span style="display: none"> 点击空白处完成修改。</span></td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td>注册时间 ：</td>
+                            <td>{{ user.timestamp }}</td>
+                        </tr>
+
+                        <tr>
+{#                            <input type="text" id="change_information" value="修改" onclick=" ">#}
+                            <td></td>
+                        </tr>
+                    </table>
+{#                </form>#}
+                {% endif %}
+                </div>
+
+            {% endblock %}
+        </div>
+        <div class="col-md-4">
+
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+
+        function change_information(td_id, content_type) {
+            $("#"+td_id).html("<input name="+td_id+" type='text'>");
+            {# "on()" 使用动态添加元素的内容 #}
+            $(document).on("change", "[name='"+td_id+"']", function () {
+               single_update($("#td_account").text(), $("[name='"+td_id+"']").val(), content_type);
+
+            });
+        }
+
+        $(document).ready(function () {
+            $("button").click(function () {
+                $(this).next().css({"display":"inline","color":"green"})
+            });
+
+        });
+    function single_update(user_account, update_content, content_type) {
+        $.ajax({
+            type: 'POST',
+            url: "{{ url_for('administer.update_user') }}",
+            data: {
+                update_account: user_account,
+                content: update_content,
+                content_type: content_type
+            },
+            dataType: 'json',
+            success: function (data) {
+                window.location.reload()
+            },
+            error: function (xhr, type) {
+                alert('update user error type: '
+                    +type+'---- status:'+xhr.status+'---- readyState:'+xhr.readyState
+                    +'---- responseText: '+xhr.responseText)
+            }
+        });
+    }
+    </script>
+{% endblock %}

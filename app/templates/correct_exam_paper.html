@@ -1,0 +1,113 @@
+{% extends "question_maker.html" %}
+{% import "_macros.html" as macros %}
+
+{% block style %}
+{{ super() }}
+    <style>
+    table{}
+    th{width: 120px;text-align: right;}
+    </style>
+<style>
+
+</style>
+{% endblock %}
+
+{% block body %}
+{#{{ super() }}#}
+{#{% endblock %}#}
+
+{% block content %}
+
+    <div class="col-md-10">
+    <form action="" method="post" class="form-horizontal" role="form">{# {{ url_for('main.exam_finished_list') }}#}
+        <table class="table table-striped">
+            <caption>改卷<br> <b>{{ exam_paper_finish.get_exam_paper().exam_paper_name }}</b><br>主观问答题
+            </caption>
+            <thead>
+            <tr>
+                <td width="50px">题序</td>
+                <td>问题</td>
+                <td>参考答案</td>
+                <td width="100px">回答</td>
+                <td>批示</td>
+                <td>得分</td>
+            </tr>
+            </thead>
+        {% block tbody %}
+            <tbody>
+            {% if pagination %}
+            {% for exam_finished_detail in exam_finished_details %}
+                {% if not exam_paper_finish.is_corrected  %}    {# 未改答卷 #}
+
+            <tr>
+                <td>
+{#                    问答题#}
+                    <script>
+                        document.write({{ exam_finished_details.index(exam_finished_detail) }} + 1);
+                    </script>
+                </td>
+                <td>
+                    {{ AnswerQuestion.query.filter_by(id=exam_finished_detail.question_id).first().question }}
+                </td>
+{#            </tr>#}
+{#             <tr>#}
+{#                <th>#}
+{#                    参考答案 :#}
+{#                </th>#}
+                <td>
+                    {{ exam_finished_detail.answer }}
+                </td>
+{#            </tr>#}
+{#            <tr>#}
+{#                <th>#}
+{#                    回答 :#}
+{#                </th>#}
+                <td>
+                    {{ exam_finished_detail.answered_content }}
+                </td>
+{#            </tr>#}
+{#            <tr>#}
+{#                <th>#}
+{#                    批示 :#}
+{#                </th>#}
+                <td>
+                    <textarea name="correct_item{{ exam_finished_detail.id }}" type="text"
+                           style="word-wrap: break-word;width: 200px;
+                           huerreson:expression(this.width=this.scrollWidth)" placeholder="改题批示"></textarea>
+{#                    <textarea name="correct_word{{ exam_finished_detail.id }}" placeholder="再改批示"></textarea>#}
+                </td>
+{#            </tr>#}
+{#            <tr>#}
+{#                <th>#}
+{#                    得分 :#}
+{#                </th>#}
+                <td>
+                    <textarea name="correct_score{{ exam_finished_detail.id }}"
+                              type="text" placeholder="主观题给分，分值15">
+                    </textarea>
+                </td>
+{#            </tr>#}
+{#            <tr>#}
+{#                <td>&nbsp;</td>#}
+            </tr>
+                {% endif %}
+            {% endfor %}
+            {% endif %}
+{#            {% endif %}#}
+            </tbody>
+        {% endblock %}
+        </table>
+        <input id="submit" name="submit" type="submit" value="提交">
+    </form>
+
+        {% if pagination %}
+            <div class="pagination">
+                {{ macros.pagination_widget(pagination, 'main.correct_exam_paper') }}
+            </div>
+        {% endif %}
+    </div>
+
+
+{% endblock %}
+
+{% endblock %}
